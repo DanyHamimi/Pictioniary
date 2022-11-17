@@ -1,0 +1,9 @@
+17/11/2022
+
+Pagani:
+    - sujet encore vague : il faut le preciser pour que il ne soit ni impossible à faire ni trivial application de opencv.
+    
+    - pour prochaine fois:
+        - experimenter opencv: voir des fonctionnalités qui vous seront utiles (comme reconnaissance bouche ouverte/fermee, main etc) et donner des idées pour faire des jeux qui demande du travail pour utiliser ces fonctionlités
+        
+    
