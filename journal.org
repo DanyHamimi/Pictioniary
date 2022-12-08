@@ -12,3 +12,13 @@ Degorre:
     - sujet précisé : genre de pictionnary où l'humain dessine et la machine devine (et apprend). Je ne sais pas évaluer le niveau de difficulté (Michele ?)
     - expérimentation réalisée avec la bibliothèque mediapipe (basée sur OpenCV), pour dessiner sur un canvas à partir de gestes de la main
     - testabilité et calendrier à adapter au nouveau sujet, et à mieux préciser
+    
+8/12/2022
+
+Pagani:
+    - sujet approuver: 2 composants: 
+        - dessiner à partir d'une main en utilisant mediapipe de opencv
+        - deviner dessin par une IA
+    - on a testé la partie 1, à perfectionner pour janvier.
+    
+On se voit le 19 janvier. 
