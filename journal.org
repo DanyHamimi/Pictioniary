@@ -20,5 +20,6 @@ Pagani:
         - dessiner à partir d'une main en utilisant mediapipe de opencv
         - deviner dessin par une IA
     - on a testé la partie 1, à perfectionner pour janvier.
+    - rediger projet pour que soit clair le jeu (deux jouers dessins jusqu'à le premier qui fait deviner l'IA)
     
 On se voit le 19 janvier. 
