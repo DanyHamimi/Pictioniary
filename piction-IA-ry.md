@@ -41,9 +41,11 @@ ceux-ci son corrects et s'améliorera au fur et à mesure de son utilisation.
 _Quelles sont les grandes étapes du projet, et à quelles dates (approximatives)
 devraient elles être atteintes ?_
 
-Fin janvier : Avoir une IA entrainée à reconnaître certains dessins basique (bateau, moulin...)
-Fin février : Reconnaissance en temps réel de ces dessins et amélioration à chaque dessin reconnu.
-jusqu'à Mai : Mise en place du jeu pour jouer en multijoueur, dessiner.
+- Fin janvier : Avoir une IA entrainée à reconnaître certains dessins basique (bateau, moulin...); perfectionner dessin avec main (dessin continu, gomme, commande evaluation)
+
+- Fin février : Reconnaissance en temps réel de ces dessins et amélioration à chaque dessin reconnu.
+
+- jusqu'à Mai : Mise en place du jeu pour jouer en multijoueur, dessiner.
 
 
 ## Références
