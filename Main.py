@@ -64,27 +64,30 @@ while True:
     results = hands.process(imgRGB)
 
     if results.multi_hand_landmarks and len(results.multi_hand_landmarks) == 2: 
+        print ("2 mains détectées")
         #cv2.imshow("Canvas", canvas)
         #c
-            if results.multi_hand_landmarks and len(results.multi_hand_landmarks) > 1:
-                start_time = time.time()
-            while (time.time() - start_time) < 1:
-                success, img = cap.read()
-                imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                results = hands.process(imgRGB)
-                cv2.imshow("Image", img)
-                # check if one hand is removed during the countdown
-                if len(results.multi_hand_landmarks) < 2:
-                    break
-            else:
-                canvasToSave[:] = 255, 255, 255
-                canvas[:] = 0, 0, 0
+            #if results.multi_hand_landmarks and len(results.multi_hand_landmarks) > 1:
+            #    start_time = time.time()
+            #while (time.time() - start_time) < 1:
+            #    success, img = cap.read()
+            #    imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            #    results = hands.process(imgRGB)
+            #    cv2.imshow("Image", img)
+            #    # check if one hand is removed during the countdown
+            #    if len(results.multi_hand_landmarks) < 2:
+            #        break
+            #else:
+            #    canvasToSave[:] = 255, 255, 255
+            #    canvas[:] = 0, 0, 0
     if results.multi_hand_landmarks and len(results.multi_hand_landmarks) == 1: # Now detect only one hand
         for handLms in results.multi_hand_landmarks:
             for id, lm in enumerate(handLms.landmark):
                 h, w, c = img.shape
                 cx, cy = int(lm.x * w), int(lm.y * h)
-                #Detect if the hand is open or close
+                if id == 4:
+                    tmpx4 = cx
+                    tmpy4 = cy
                 if id == 19:
                     tmpx19 = cx
                     tmpy19 = cy
@@ -94,6 +97,18 @@ while True:
                 if id == 7: 
                     tmpx7 = cx
                     tmpy7 = cy
+                if id == 15:
+                    tmpx15 = cx
+                    tmpy15 = cy
+                if id == 16:
+                    tmpx16 = cx
+                    tmpy16 = cy
+                if id == 11: 
+                    tmpx11 = cx
+                    tmpy11 = cy
+                if id == 12:
+                    tmpx12 = cx
+                    tmpy12 = cy
                 if id == 8:
                     print("Coords de 8", cx, cy)
                     cv2.circle(img, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
@@ -107,23 +122,26 @@ while True:
                 else :
                     tmpx8 = 1920 - tmpx8
                     drawLine(tmpx8, tmpy8)
-            if tmpx19 != 0 and tmpy19 != 0 and tmpx20 != 0 and tmpy20 != 0:
-                if tmpy19 < tmpy20:
-                    #SAve canvas in a file jpg
-                    print("Doigt Baissé")
-                    if(Position == True):
-                        Position = False
-                        if (Erase == False):
-                            #Erase = True
-                            null = 0
-                        else :
-                            null = 0
-                            #Erase = False
-
+            if tmpx19 != 0 and tmpy19 != 0 and tmpx20 != 0 and tmpy20 != 0 and tmpx11 != 0 and tmpy11 != 0 and tmpx12 != 0 and tmpy12 != 0 and tmpx15 != 0 and tmpy15 != 0 and tmpx16 != 0 and tmpy16 != 0 and tmpx4 != 0 and tmpy4 != 0 and tmpx8 != 0 and tmpy8 != 0:
+                if tmpy19 < tmpy20 and tmpy11 < tmpy12 and tmpy15 < tmpy16:
+                    print("photo")
+                    canvasToSave[:] = 255, 255, 255
+                    canvas[:] = 0, 0, 0
                 else :
-                    tmpx20 = 1920 - tmpx20
-                    if(Position == False):
-                        Position = True
+                    if tmpy19 < tmpy20:
+                        print("Doigt Baissé")
+                        if(Position == True):
+                            Position = False
+                            if (Erase == False):
+                                #Erase = True
+                                null = 0
+                            else :
+                                null = 0
+                                #Erase = False
+                    else :
+                        tmpx20 = 1920 - tmpx20
+                        if(Position == False):
+                            Position = True
                 
             mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
     
