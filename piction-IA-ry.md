@@ -15,26 +15,26 @@ reconnaitre sa main, et à partir de cela reconnaitre quels doigts
 sont levés ou non... à partir de celà dessiner le mot donné pour que l'ia puisse à 
 chaque nouveau trait essayer de deviner le dessin.
 
-Dans un premier temps nous devrons travailler sur le fait de capturer les zones
-nécessaires à l'analyse (la main, le visage..) et uniquement cela.
+Dans un premier temps nous devrons travailler sur l'aspect dessin avec la main, utilisation de l'application avec la main,
+dessiner, recommencer...
 
-Une fois les images capturées analyser en temps réel celles-ci afin de savoir
-ce qu'il se passe sur la caméra actuellement.
+Une fois ces données traitées il faudra les envoyer à l'IA afin qu'elle essaye de deviner le dessin et retourne s'il s'agit
+ou non du bon dessin.
 
-Finalement faire un "jeu" qui prendra les données retournées par ce qui a été 
-analysé par la caméra et qui utilisera celles-ci comme élément de gameplay.
+Le gameplay du jeu se fera donc en réseau avec d'autre utilisateurs munis d'une webcam et les fera s'affronter sur celui qui fait 
+deviner à l'IA le plus de dessins possible en un laps de temps.
 
 _Une fois cet objectif réalisé, quels objectifs secondaires peuvent être
 développés ?_
 
 Une fois l'objectif réalisé il sera possible d'ajouter des fonctionnalités 
-supplémentaires en analysant par exemple d'autres parties du corps et permettre au joueur
-de jouer avec celles-ci.
-
+supplémentaires comme d'autres mini-jeux en utilisants ces fonctionnalités ou en implémentant d'autres fonctionnalités comme la reconnaissance
+du visage et des jeux avec celui-ci.
 ## Testabilité
 
-Si le projet final est "bien" réalisé il sera reconnaître les dessins effectués si
-ceux-ci son corrects et s'améliorera au fur et à mesure de son utilisation.
+Si le projet final est "bien" réalisé, il sera possible de jouer à plusieurs utilisateurs et donc de déssiner chacun de son côté en voyant en temps
+réel les dessins des autres utilisateurs et le nombre de points qu'ils ont. L'IA sera quant à elle capable de reconnaître avec un taux de précision haut 
+ces dessins et donc dire au joueur s'il a effectué ou nom le bon dessin.
 
 ## Calendrier
 
