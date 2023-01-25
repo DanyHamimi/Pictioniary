@@ -85,6 +85,10 @@ while True:
                         Position = True
                 
             mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
+    
+    else : 
+        tmpcordX = -1
+        tmpcordY = -1
     img = cv2.flip(img, 1)
     cv2.imshow("Image", img)
     cv2.waitKey(1)
