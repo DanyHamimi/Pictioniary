@@ -23,3 +23,17 @@ Pagani:
     - rediger projet pour que soit clair le jeu (deux jouers dessins jusqu'à le premier qui fait deviner l'IA)
     
 On se voit le 19 janvier. 
+
+25/01/2022
+Pagani:
+    - fait interface dessin a' partir de geste de main. Tres precis et fluide
+    - etiduer plusieurs modeles tenseurflow pour reconnaissance chiffre
+    - bon rendu !
+    
+à faire pour le rapport de fevrier :
+    - relier les deux partie pour faire un jeu complet et verifier fluidité du jeu
+    - si possible faire deux jouer en réseaux, mais toujours sur la reconnaissance de chifre
+
+une fois fait le jeu sur les chiffres, leargir à d'autres type d'image. 
+
+
