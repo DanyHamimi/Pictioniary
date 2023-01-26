@@ -49,7 +49,9 @@ def drawLine(a, b):
     cv2.imwrite("canvas.jpg", canvasToSave)
     #create an image from the area (300, 100), (1200, 1000) of the canvas and save it in the folder
     img = Image.open("canvas.jpg")
-    img = img.crop((300, 100, 1200, 1000))
+    #FLIP 300 AND 1200 TO FLIP THE IMAGE
+
+    img = img.crop((700, 100, 1600, 1000))
     img.save("canvas.jpg")
 
     
