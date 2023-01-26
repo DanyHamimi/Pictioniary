@@ -25,6 +25,7 @@ canvas = np.zeros((1080, 1920, 3), np.uint8)
 cv2.imshow("Canvas", canvas)
 cv2.imshow("Canvas", canvas)
 
+
     
 
 def drawLine(a, b):
@@ -34,23 +35,22 @@ def drawLine(a, b):
         tmpcordY = b
 
     if Erase == True:
-        #Draw a line between tmpcordX, tmpcordY and a, b
-        #launch a function who will count untn
         cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 50)
         cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 50)
     else:
         cv2.line(canvas, (0, 0), (1, 1), (255, 255, 255), 15)
         print("Coords de 8", a, b)
         print("Coords de 7", tmpcordX, tmpcordY)
-        #cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 15)
-        #cv2.circle(canvas, (a, b), 15, (255, 255, 255), -1)
         cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 50)
         cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 50)
     cv2.imshow("Canvas", canvas)
     tmpcordX = a
     tmpcordY = b
-    #Save canvas in a file jpg 
     cv2.imwrite("canvas.jpg", canvasToSave)
+    #create an image from the area (300, 100), (1200, 1000) of the canvas and save it in the folder
+    img = Image.open("canvas.jpg")
+    img = img.crop((300, 100, 1200, 1000))
+    img.save("canvas.jpg")
 
     
 
@@ -63,6 +63,7 @@ while True:
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
 
+    cv2.rectangle(img, (300, 100), (1200, 1000), (0, 255, 0), 2)
     if results.multi_hand_landmarks and len(results.multi_hand_landmarks) == 2: 
         print ("2 mains détectées")
         #cv2.imshow("Canvas", canvas)
@@ -157,3 +158,4 @@ while True:
 
 
 #pytorch
+#sofrmax
