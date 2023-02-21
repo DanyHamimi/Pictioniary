@@ -20,7 +20,12 @@ x_train = tf.keras.utils.normalize(x_train, axis=1)
 x_test = tf.keras.utils.normalize(x_test, axis=1)
 model = tf.keras.models.load_model('number.model')
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # this is the magic!
+
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+
+r, frame = cap.read()
 pTime = 0
 tmpcordX = -1
 tmpcordY = -1
