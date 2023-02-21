@@ -5,8 +5,20 @@ from PIL import Image
 from PIL import ImageFilter
 #from pynput.keyboard import Listener, Key
 import time
+from AITrain.numRec import *
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+#Create a AITrain object
 
 
+
+mnist = tf.keras.datasets.mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+x_train = tf.keras.utils.normalize(x_train, axis=1)
+x_test = tf.keras.utils.normalize(x_test, axis=1)
+model = tf.keras.models.load_model('number.model')
 
 cap = cv2.VideoCapture(0)
 pTime = 0
@@ -68,6 +80,9 @@ while True:
     cv2.rectangle(img, (300, 100), (1200, 1000), (0, 255, 0), 2)
     if results.multi_hand_landmarks and len(results.multi_hand_landmarks) == 2: 
         print ("2 mains détectées")
+        #erase both canvas 
+        canvasToSave[:] = 255, 255, 255
+        canvas[:] = 0, 0, 0
         #cv2.imshow("Canvas", canvas)
         #c
             #if results.multi_hand_landmarks and len(results.multi_hand_landmarks) > 1:
@@ -128,8 +143,21 @@ while True:
             if tmpx19 != 0 and tmpy19 != 0 and tmpx20 != 0 and tmpy20 != 0 and tmpx11 != 0 and tmpy11 != 0 and tmpx12 != 0 and tmpy12 != 0 and tmpx15 != 0 and tmpy15 != 0 and tmpx16 != 0 and tmpy16 != 0 and tmpx4 != 0 and tmpy4 != 0 and tmpx8 != 0 and tmpy8 != 0:
                 if tmpy19 < tmpy20 and tmpy11 < tmpy12 and tmpy15 < tmpy16:
                     print("photo")
-                    canvasToSave[:] = 255, 255, 255
-                    canvas[:] = 0, 0, 0
+                    #canvasToSave[:] = 255, 255, 255
+                    #canvas[:] = 0, 0, 0
+                    try:
+                        imgBis =  cv2.imread(f"canvas.jpg")[:,:,0]
+                        width = 28
+                        height = 28
+                        dim = (width, height)
+                        imgBis = cv2.resize(imgBis, dim, interpolation=cv2.INTER_AREA)
+                        imgBis = np.invert(np.array([imgBis]))
+                        prediction = model.predict(imgBis)
+                        print(f"le chiffre ici est :{np.argmax(prediction)}")
+                        plt.imshow(imgBis[0], cmap=plt.cm.binary)
+                        #plt.show()
+                    except:
+                        print("error")
                 else :
                     if tmpy19 < tmpy20:
                         print("Doigt Baissé")
