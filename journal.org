@@ -24,7 +24,7 @@ Pagani:
     
 On se voit le 19 janvier. 
 
-25/01/2022
+25/01/2023
 Pagani:
     - fait interface dessin a' partir de geste de main. Tres precis et fluide
     - etiduer plusieurs modeles tenseurflow pour reconnaissance chiffre
@@ -36,4 +36,17 @@ Pagani:
 
 une fois fait le jeu sur les chiffres, leargir à d'autres type d'image. 
 
+22/02/2023
+Pagani:
+    - relié les deux modules (reconnaissance chiffe et classification), mais modele neuronal chiffres un peu simple, demandé de voir architecture Lenet si 
+    on ameliore la performance
+    - partie reseaux pas faite, mais ils peuvnet la faire rapidement: architecture clients/serveur
+    - est-il possible de communiquer images reconnue au modele de classification directement comme tenseur sans passser par un image png. 
+    (je crois qu'il n'est pas possible)
+    
+    
+    - continuation projet: elargir sur d'autres dessins que des chiffres. jeu de données googles sur d'autres images. 
+    
+    - 400 LOC
 
+    
