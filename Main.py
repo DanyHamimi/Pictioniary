@@ -12,7 +12,10 @@ import pygame
 
 isTesting = False
 has2Hands = False
+
 valToFind = np.random.randint(0, 9)
+
+#font = pygame.font.Font('freesansbold.ttf', 32)
 print(valToFind)
 valFinded = -2
 score = 0
@@ -43,8 +46,8 @@ canvasToSave = np.zeros((480, 640, 3), np.uint8)
 canvasToSave[:] = 255, 255, 255
 
 canvas = np.zeros((480, 640, 3), np.uint8)
-cv2.imshow("Canvas", canvas)
-cv2.imshow("Canvas", canvas)
+##cv2.imshow("Canvas", canvas)
+##cv2.imshow("Canvas", canvas)
 
 
 pygame.init()
@@ -52,7 +55,12 @@ width, height = 1280, 720
 pygame.display.set_mode((width, height))
 pygame.display.set_caption("PictionIAry")
 window = pygame.display.get_surface()
+window.fill((255, 255, 255))
+
 font = pygame.font.Font('freesansbold.ttf', 32)
+
+textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (0, 0, 0))
+window.blit(textNb, (800, 50))
 
 #Add to the window an image called "Erase.png" at the position (480, 0)
 
@@ -68,7 +76,7 @@ def drawLine(a, b):
 
     cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 25)
     cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 25)
-    cv2.imshow("Canvas", canvas)
+    #cv2.imshow("Canvas", canvas)
     tmpcordX = a
     tmpcordY = b
     cv2.imwrite("Imgs/canvas.jpg", canvasToSave)
@@ -168,8 +176,20 @@ while True:
                             if valToFind == valFinded:
                                 score += 1
                                 valToFind = np.random.randint(0, 9)
+                                #remove textNb from the window
+                                textNb = font.render("totototo", True, (0, 0, 0))
+                                textRectNb = textNb.get_rect()
+                                textRectNb.center = (width/2, height/2)
+                                #add textNb to the window
+                                window.blit(textNb, textRectNb)
+
+
+
+
+
+
                                 valFinded = -2
-                            plt.imshow(imgBis[0], cmap=plt.cm.binary)
+                            #plt.imshow(imgBis[0], cmap=plt.cm.binary)
                             #plt.show()
                         except:
                             print("error")
@@ -181,9 +201,9 @@ while True:
         tmpcordX = -1
         tmpcordY = -1
     img = cv2.flip(img, 1)
-    cv2.imshow("Image", img)
+    #cv2.imshow("Image", img)
     cv2.addWeighted(canvas, 1, img, 1, 1, img)
-    cv2.imshow("Image", img)
+    #cv2.imshow("Image", img)
     cv2.waitKey(1)
 
     for event in pygame.event.get():
@@ -209,7 +229,9 @@ while True:
 
     frameCanvas = pygame.transform.flip(frameCanvas, False, True)
 
-    
+    #put a white background to the window
+
+
 
     #window.blit(frame, (0, 0))
     window.blit(frameCanvas, (0, 0))
@@ -217,6 +239,10 @@ while True:
     #Add text score : next to the canvas
     text = font.render("Score : " + str(score), True, (255, 255, 255))
     window.blit(text, (500, 0))
+
+
+
+
     
 
 
