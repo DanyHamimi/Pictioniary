@@ -171,6 +171,8 @@ while True:
                             print (valFinded)
                             if valToFind == valFinded:
                                 score += 1
+                                textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
+                                window.blit(textNb, (800, 50))
                                 valToFind = np.random.randint(0, 9)
                                 #remove textNb from the window
                                 textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (0, 0, 0))
