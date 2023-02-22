@@ -8,7 +8,10 @@ import time
 from AITrain.numRec import *
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import pygame
 
+isTesting = False
+has2Hands = False
 # Create an AITrain object
 mnist = tf.keras.datasets.mnist
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -17,7 +20,7 @@ x_train = tf.keras.utils.normalize(x_train, axis=1)
 x_test = tf.keras.utils.normalize(x_test, axis=1)
 model = tf.keras.models.load_model('number.model')
 
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # this is the magic!
+cap = cv2.VideoCapture(0)
 
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -39,21 +42,32 @@ canvas = np.zeros((480, 640, 3), np.uint8)
 cv2.imshow("Canvas", canvas)
 cv2.imshow("Canvas", canvas)
 
+
+pygame.init()
+width, height = 1280, 720
+pygame.display.set_mode((width, height))
+pygame.display.set_caption("PictionIAry")
+window = pygame.display.get_surface()
+
+#Add to the window an image called "Erase.png" at the position (480, 0)
+erase = pygame.image.load("Imgs/Erase.png")
+window.blit(erase, (0, 480))
+
+ask = pygame.image.load("Imgs/Ask.png")
+window.blit(ask, (200, 480))
+
+draw = pygame.image.load("Imgs/Draw.png")
+window.blit(draw, (400, 480))
+
+
 def drawLine(a, b):
     global tmpcordX, tmpcordY
     if tmpcordX == -1 and tmpcordY == -1:
         tmpcordX = a
         tmpcordY = b
 
-    if Erase == True:
-        cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 25)
-        cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 25)
-    else:
-        cv2.line(canvas, (0, 0), (1, 1), (255, 255, 255), 7)
-        print("Coords de 8", a, b)
-        print("Coords de 7", tmpcordX, tmpcordY)
-        cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 25)
-        cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 25)
+    cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 25)
+    cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 25)
     cv2.imshow("Canvas", canvas)
     tmpcordX = a
     tmpcordY = b
@@ -64,36 +78,25 @@ def drawLine(a, b):
     img = img.crop((200, 50, 550, 400))
     img.save("canvas.jpg")
 
-valFinger = 0
 
 while True:
+
+    # Update the display
+    pygame.display.update()
+
     success, img = cap.read()
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
-
+    
     #Put a rectangle on the canvas to draw on it at the middle of it (res is 640x480)
     cv2.rectangle(img, (100, 50), (450, 400), (0, 255, 0), 2)
-    if results.multi_hand_landmarks and len(results.multi_hand_landmarks) == 2: 
-        print ("2 mains détectées")
-        #erase both canvas 
-        canvasToSave[:] = 255, 255, 255
-        canvas[:] = 0, 0, 0
-        #cv2.imshow("Canvas", canvas)
-        #c
-            #if results.multi_hand_landmarks and len(results.multi_hand_landmarks) > 1:
-            #    start_time = time.time()
-            #while (time.time() - start_time) < 1:
-            #    success, img = cap.read()
-            #    imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            #    results = hands.process(imgRGB)
-            #    cv2.imshow("Image", img)
-            #    # check if one hand is removed during the countdown
-            #    if len(results.multi_hand_landmarks) < 2:
-            #        break
-            #else:
-            #    canvasToSave[:] = 255, 255, 255
-            #    canvas[:] = 0, 0, 0
+    if results.multi_hand_landmarks and len(results.multi_hand_landmarks) == 2 and has2Hands == False:
+        has2Hands = True
+        if has2Hands :
+            print("2 mains détectées")
+            
     if results.multi_hand_landmarks and len(results.multi_hand_landmarks) == 1: # Now detect only one hand
+        has2Hands = False
         for handLms in results.multi_hand_landmarks:
             for id, lm in enumerate(handLms.landmark):
                 h, w, c = img.shape
@@ -122,52 +125,46 @@ while True:
                 if id == 12:
                     tmpx12 = cx
                     tmpy12 = cy
+                if id == 5:
+                    tmpx5 = cx
+                    tmpy5 = cy
                 if id == 8:
-                    print("Coords de 8", cx, cy)
+                    #print("Coords de 8", cx, cy)
                     cv2.circle(img, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
                     tmpx8 = cx
                     tmpy8 = cy     
-            if tmpx7 != 0 and tmpy7 != 0 and tmpx8 != 0 and tmpy8 != 0:
-                if tmpy7 < tmpy8:
+            if tmpx19 != 0 and tmpy19 != 0 and tmpx20 != 0 and tmpy20 != 0 and tmpx11 != 0 and tmpy11 != 0 and tmpx12 != 0 and tmpy12 != 0 and tmpx15 != 0 and tmpy15 != 0 and tmpx16 != 0 and tmpy16 != 0 and tmpx4 != 0 and tmpy4 != 0 and tmpx8 != 0 and tmpy8 != 0 and tmpy5 != 0:
+                if tmpy5 < tmpy8:
+                    if tmpy19 < tmpy20 and tmpy11 < tmpy12 and tmpy15 < tmpy16 :
+                        canvasToSave[:] = 255, 255, 255
+                        canvas[:] = 0, 0, 0
                     tmpcordX = -1
                     tmpcordY = -1
-                    print("Doigt Baissé")
-                else :
+                        #print("Doigt Baissé")
+                elif tmpy19 < tmpy20 and tmpy11 < tmpy12 and tmpy15 < tmpy16 :
                     tmpx8 = 640 - tmpx8
+                    isTesting = False
                     drawLine(tmpx8, tmpy8)
-            if tmpx19 != 0 and tmpy19 != 0 and tmpx20 != 0 and tmpy20 != 0 and tmpx11 != 0 and tmpy11 != 0 and tmpx12 != 0 and tmpy12 != 0 and tmpx15 != 0 and tmpy15 != 0 and tmpx16 != 0 and tmpy16 != 0 and tmpx4 != 0 and tmpy4 != 0 and tmpx8 != 0 and tmpy8 != 0:
-                if tmpy19 < tmpy20 and tmpy11 < tmpy12 and tmpy15 < tmpy16:
-                    print("photo")
-                    #canvasToSave[:] = 255, 255, 255
-                    #canvas[:] = 0, 0, 0
-                    try:
-                        imgBis =  cv2.imread(f"canvas.jpg")[:,:,0]
-                        width = 28
-                        height = 28
-                        dim = (width, height)
-                        imgBis = cv2.resize(imgBis, dim, interpolation=cv2.INTER_AREA)
-                        imgBis = np.invert(np.array([imgBis]))
-                        prediction = model.predict(imgBis)
-                        print(f"le chiffre ici est :{np.argmax(prediction)}")
-                        plt.imshow(imgBis[0], cmap=plt.cm.binary)
-                        #plt.show()
-                    except:
-                        print("error")
-                else :
-                    if tmpy19 < tmpy20:
-                        print("Doigt Baissé")
-                        if(Position == True):
-                            Position = False
-                            if (Erase == False):
-                                #Erase = True
-                                null = 0
-                            else :
-                                null = 0
-                                #Erase = False
-                    else :
-                        tmpx20 = 640 - tmpx20
-                        if(Position == False):
-                            Position = True
+                elif tmpy19 > tmpy20 and tmpy11 > tmpy12 and tmpy15 > tmpy16 and tmpy4 > tmpy8 and isTesting == False:
+                    #Check if all fingers are up
+                        isTesting = True
+                        print("photo")
+                        #canvasToSave[:] = 255, 255, 255
+                        #canvas[:] = 0, 0, 0
+                        try:
+                            imgBis =  cv2.imread(f"canvas.jpg")[:,:,0]
+                            width = 28
+                            height = 28
+                            dim = (width, height)
+                            imgBis = cv2.resize(imgBis, dim, interpolation=cv2.INTER_AREA)
+                            imgBis = np.invert(np.array([imgBis]))
+                            prediction = model.predict(imgBis)
+                            print(f"le chiffre ici est :{np.argmax(prediction)}")
+                            plt.imshow(imgBis[0], cmap=plt.cm.binary)
+                            #plt.show()
+                        except:
+                            print("error")
+
                 
             mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
     
@@ -179,6 +176,33 @@ while True:
     cv2.addWeighted(canvas, 1, img, 1, 1, img)
     cv2.imshow("Image", img)
     cv2.waitKey(1)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+
+
+
+    #Convert the frame to a Pygame surface
+    frame = imgRGB
+    frame = np.rot90(frame)
+
+    #add canvasToSave NDArray[uint8] to the window
+
+
+
+    frame = pygame.surfarray.make_surface(frame)
+    frameCanvas = pygame.surfarray.make_surface(img)
+    #Rotate the frame 90 degrees
+    frameCanvas = pygame.transform.rotate(frameCanvas, 90)
+
+    frameCanvas = pygame.transform.flip(frameCanvas, False, True)
+
+    #window.blit(frame, (0, 0))
+    window.blit(frameCanvas, (0, 0))
+    
 
 
 
