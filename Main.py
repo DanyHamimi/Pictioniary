@@ -55,14 +55,9 @@ window = pygame.display.get_surface()
 font = pygame.font.Font('freesansbold.ttf', 32)
 
 #Add to the window an image called "Erase.png" at the position (480, 0)
-erase = pygame.image.load("Imgs/Erase.png")
-window.blit(erase, (0, 480))
 
-ask = pygame.image.load("Imgs/Ask.png")
-window.blit(ask, (200, 480))
-
-draw = pygame.image.load("Imgs/Draw.png")
-window.blit(draw, (400, 480))
+draw = pygame.image.load("Imgs/hand.jpg")
+window.blit(draw,(0,480))
 
 
 def drawLine(a, b):
