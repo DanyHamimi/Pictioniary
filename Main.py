@@ -71,12 +71,12 @@ def drawLine(a, b):
     cv2.imshow("Canvas", canvas)
     tmpcordX = a
     tmpcordY = b
-    cv2.imwrite("canvas.jpg", canvasToSave)
+    cv2.imwrite("Imgs/canvas.jpg", canvasToSave)
     #create an image from the area (150, 50), (450, 350) of the canvas and save it in the folder
-    img = Image.open("canvas.jpg")
+    img = Image.open("Imgs/canvas.jpg")
     #CROP area of the rectangle (100, 50, 450, 30)
     img = img.crop((200, 50, 550, 400))
-    img.save("canvas.jpg")
+    img.save("Imgs/canvas.jpg")
 
 
 while True:
@@ -152,7 +152,7 @@ while True:
                         #canvasToSave[:] = 255, 255, 255
                         #canvas[:] = 0, 0, 0
                         try:
-                            imgBis =  cv2.imread(f"canvas.jpg")[:,:,0]
+                            imgBis =  cv2.imread("Imgs/canvas.jpg")[:,:,0]
                             width = 28
                             height = 28
                             dim = (width, height)
