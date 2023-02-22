@@ -9,10 +9,7 @@ from AITrain.numRec import *
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-#Create a AITrain object
-
-
-
+# Create an AITrain object
 mnist = tf.keras.datasets.mnist
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
@@ -22,8 +19,8 @@ model = tf.keras.models.load_model('number.model')
 
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # this is the magic!
 
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
 r, frame = cap.read()
 pTime = 0
@@ -35,15 +32,12 @@ mpDraw = mp.solutions.drawing_utils
 Erase = True
 Position = False
 
-canvasToSave = np.zeros((1080, 1920, 3), np.uint8)
+canvasToSave = np.zeros((480, 640, 3), np.uint8)
 canvasToSave[:] = 255, 255, 255
 
-canvas = np.zeros((1080, 1920, 3), np.uint8)
+canvas = np.zeros((480, 640, 3), np.uint8)
 cv2.imshow("Canvas", canvas)
 cv2.imshow("Canvas", canvas)
-
-
-    
 
 def drawLine(a, b):
     global tmpcordX, tmpcordY
@@ -52,37 +46,33 @@ def drawLine(a, b):
         tmpcordY = b
 
     if Erase == True:
-        cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 50)
-        cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 50)
+        cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 25)
+        cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 25)
     else:
-        cv2.line(canvas, (0, 0), (1, 1), (255, 255, 255), 15)
+        cv2.line(canvas, (0, 0), (1, 1), (255, 255, 255), 7)
         print("Coords de 8", a, b)
         print("Coords de 7", tmpcordX, tmpcordY)
-        cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 50)
-        cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 50)
+        cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 25)
+        cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 25)
     cv2.imshow("Canvas", canvas)
     tmpcordX = a
     tmpcordY = b
     cv2.imwrite("canvas.jpg", canvasToSave)
-    #create an image from the area (300, 100), (1200, 1000) of the canvas and save it in the folder
+    #create an image from the area (150, 50), (450, 350) of the canvas and save it in the folder
     img = Image.open("canvas.jpg")
-    #FLIP 300 AND 1200 TO FLIP THE IMAGE
-
-    img = img.crop((700, 100, 1600, 1000))
+    #CROP area of the rectangle (100, 50, 450, 30)
+    img = img.crop((200, 50, 550, 400))
     img.save("canvas.jpg")
-
-    
-
-
 
 valFinger = 0
 
-while True:    
+while True:
     success, img = cap.read()
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
 
-    cv2.rectangle(img, (300, 100), (1200, 1000), (0, 255, 0), 2)
+    #Put a rectangle on the canvas to draw on it at the middle of it (res is 640x480)
+    cv2.rectangle(img, (100, 50), (450, 400), (0, 255, 0), 2)
     if results.multi_hand_landmarks and len(results.multi_hand_landmarks) == 2: 
         print ("2 mains détectées")
         #erase both canvas 
@@ -143,7 +133,7 @@ while True:
                     tmpcordY = -1
                     print("Doigt Baissé")
                 else :
-                    tmpx8 = 1920 - tmpx8
+                    tmpx8 = 640 - tmpx8
                     drawLine(tmpx8, tmpy8)
             if tmpx19 != 0 and tmpy19 != 0 and tmpx20 != 0 and tmpy20 != 0 and tmpx11 != 0 and tmpy11 != 0 and tmpx12 != 0 and tmpy12 != 0 and tmpx15 != 0 and tmpy15 != 0 and tmpx16 != 0 and tmpy16 != 0 and tmpx4 != 0 and tmpy4 != 0 and tmpx8 != 0 and tmpy8 != 0:
                 if tmpy19 < tmpy20 and tmpy11 < tmpy12 and tmpy15 < tmpy16:
@@ -175,7 +165,7 @@ while True:
                                 null = 0
                                 #Erase = False
                     else :
-                        tmpx20 = 1920 - tmpx20
+                        tmpx20 = 640 - tmpx20
                         if(Position == False):
                             Position = True
                 
