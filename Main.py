@@ -58,9 +58,9 @@ window = pygame.display.get_surface()
 window.fill((255, 255, 255))
 
 font = pygame.font.Font('freesansbold.ttf', 32)
-
 textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (0, 0, 0))
 window.blit(textNb, (800, 50))
+
 
 #Add to the window an image called "Erase.png" at the position (480, 0)
 
@@ -152,10 +152,6 @@ while True:
                     tmpcordX = -1
                     tmpcordY = -1
                         #print("Doigt Baissé")
-                elif tmpy19 < tmpy20 and tmpy11 < tmpy12 and tmpy15 < tmpy16 :
-                    tmpx8 = 640 - tmpx8
-                    isTesting = False
-                    drawLine(tmpx8, tmpy8)
                 elif tmpy19 > tmpy20 and tmpy11 > tmpy12 and tmpy15 > tmpy16 and tmpy4 > tmpy8 and isTesting == False:
                     #Check if all fingers are up
                         isTesting = True
@@ -177,14 +173,8 @@ while True:
                                 score += 1
                                 valToFind = np.random.randint(0, 9)
                                 #remove textNb from the window
-                                textNb = font.render("totototo", True, (0, 0, 0))
-                                textRectNb = textNb.get_rect()
-                                textRectNb.center = (width/2, height/2)
-                                #add textNb to the window
-                                window.blit(textNb, textRectNb)
-
-
-
+                                textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (0, 0, 0))
+                                window.blit(textNb, (800, 50))
 
 
 
@@ -193,6 +183,10 @@ while True:
                             #plt.show()
                         except:
                             print("error")
+                else :
+                    tmpx8 = 640 - tmpx8
+                    isTesting = False
+                    drawLine(tmpx8, tmpy8)
 
                 
             mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
