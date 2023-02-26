@@ -66,8 +66,6 @@ textVal = font.render("Chiffre trouvé : " + str(0), True, (0, 0, 0))
 window.blit(textVal, (800, 100))
 
 
-#Add to the window an image called "Erase.png" at the position (480, 0)
-
 draw = pygame.image.load("Imgs/hand.jpg")
 window.blit(draw,(0,480))
 
@@ -90,11 +88,20 @@ def drawLine(a, b):
     img = img.crop((200, 50, 550, 400))
     img.save("Imgs/canvas.jpg")
 
+def imagePrediction():
+    pygame.draw.rect(window, (255, 255, 255), (800, 100, 400, 100))
+    imgBis = cv2.imread("Imgs/canvas.jpg")[:, :, 0]
+    width = 28
+    height = 28
+    dim = (width, height)
+    imgBis = cv2.resize(imgBis, dim, interpolation=cv2.INTER_AREA)
+    imgBis = np.invert(np.array([imgBis]))
+    prediction = modelBis.predict([imgBis])[0]
+    return np.argmax(prediction)
+
+
 
 while True:
-
-
-
 
     # Update the display
     pygame.display.update()
@@ -163,20 +170,10 @@ while True:
                         #canvasToSave[:] = 255, 255, 255
                         #canvas[:] = 0, 0, 0
                         try:
-                            #draw a white rectangle on the window at the position (800, 100) with a width of 200 and a height of 50
-                            pygame.draw.rect(window, (255, 255, 255), (800, 100, 400, 100))
-                            imgBis =  cv2.imread("Imgs/canvas.jpg")[:,:,0]
-                            width = 28
-                            height = 28
-                            dim = (width, height)
-                            imgBis = cv2.resize(imgBis, dim, interpolation=cv2.INTER_AREA)
-                            imgBis = np.invert(np.array([imgBis]))
-                            prediction = modelBis.predict([imgBis])[0]
-                            valFinded = np.argmax(prediction)
+                            valFinded = imagePrediction()
                             print (valFinded)
                             textVal = font.render("Chiffre trouvé : " + str(valFinded), True, (0, 0, 0))
                             window.blit(textVal, (800, 100))
-
                             if valToFind == valFinded:
                                 score += 1
                                 textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
