@@ -62,6 +62,9 @@ font = pygame.font.Font('freesansbold.ttf', 32)
 textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (0, 0, 0))
 window.blit(textNb, (800, 50))
 
+textVal = font.render("Chiffre trouvé : " + str(0), True, (0, 0, 0))
+window.blit(textVal, (800, 100))
+
 
 #Add to the window an image called "Erase.png" at the position (480, 0)
 
@@ -144,7 +147,7 @@ while True:
                     #print("Coords de 8", cx, cy)
                     cv2.circle(img, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
                     tmpx8 = cx
-                    tmpy8 = cy     
+                    tmpy8 = cy
             if tmpx19 != 0 and tmpy19 != 0 and tmpx20 != 0 and tmpy20 != 0 and tmpx11 != 0 and tmpy11 != 0 and tmpx12 != 0 and tmpy12 != 0 and tmpx15 != 0 and tmpy15 != 0 and tmpx16 != 0 and tmpy16 != 0 and tmpx4 != 0 and tmpy4 != 0 and tmpx8 != 0 and tmpy8 != 0 and tmpy5 != 0:
                 if tmpy5 < tmpy8:
                     if tmpy19 < tmpy20 and tmpy11 < tmpy12 and tmpy15 < tmpy16 :
@@ -160,6 +163,8 @@ while True:
                         #canvasToSave[:] = 255, 255, 255
                         #canvas[:] = 0, 0, 0
                         try:
+                            textVal = font.render("Chiffre trouvé : " + str(valFinded), True, (255, 255, 255))
+                            window.blit(textVal, (800, 100))
                             imgBis =  cv2.imread("Imgs/canvas.jpg")[:,:,0]
                             width = 28
                             height = 28
@@ -170,20 +175,17 @@ while True:
                             #print(f"le chiffre ici est :{np.argmax(prediction)}")
                             valFinded = np.argmax(prediction)
                             print (valFinded)
+                            textVal = font.render("Chiffre trouvé : " + str(valFinded), True, (0, 0, 0))
+                            window.blit(textVal, (800, 100))
+
                             if valToFind == valFinded:
                                 score += 1
                                 textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
                                 window.blit(textNb, (800, 50))
                                 valToFind = np.random.randint(0, 9)
-                                #remove textNb from the window
                                 textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (0, 0, 0))
                                 window.blit(textNb, (800, 50))
-
-
-
                                 valFinded = -2
-                            #plt.imshow(imgBis[0], cmap=plt.cm.binary)
-                            #plt.show()
                         except:
                             print("error")
                 else :
