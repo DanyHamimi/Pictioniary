@@ -163,8 +163,8 @@ while True:
                         #canvasToSave[:] = 255, 255, 255
                         #canvas[:] = 0, 0, 0
                         try:
-                            textVal = font.render("Chiffre trouvé : " + str(valFinded), True, (255, 255, 255))
-                            window.blit(textVal, (800, 100))
+                            #draw a white rectangle on the window at the position (800, 100) with a width of 200 and a height of 50
+                            pygame.draw.rect(window, (255, 255, 255), (800, 100, 400, 100))
                             imgBis =  cv2.imread("Imgs/canvas.jpg")[:,:,0]
                             width = 28
                             height = 28
@@ -172,7 +172,6 @@ while True:
                             imgBis = cv2.resize(imgBis, dim, interpolation=cv2.INTER_AREA)
                             imgBis = np.invert(np.array([imgBis]))
                             prediction = modelBis.predict([imgBis])[0]
-                            #print(f"le chiffre ici est :{np.argmax(prediction)}")
                             valFinded = np.argmax(prediction)
                             print (valFinded)
                             textVal = font.render("Chiffre trouvé : " + str(valFinded), True, (0, 0, 0))
@@ -238,6 +237,8 @@ while True:
     #Add text score : next to the canvas
     text = font.render("Score : " + str(score), True, (255, 255, 255))
     window.blit(text, (500, 0))
+
+
 
 
 
