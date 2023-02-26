@@ -26,6 +26,7 @@ mnist = tf.keras.datasets.mnist
 x_train = tf.keras.utils.normalize(x_train, axis=1)
 x_test = tf.keras.utils.normalize(x_test, axis=1)
 model = tf.keras.models.load_model('number.model')
+modelBis = tf.keras.models.load_model('mnist.h5')
 
 cap = cv2.VideoCapture(0)
 
@@ -165,7 +166,7 @@ while True:
                             dim = (width, height)
                             imgBis = cv2.resize(imgBis, dim, interpolation=cv2.INTER_AREA)
                             imgBis = np.invert(np.array([imgBis]))
-                            prediction = model.predict(imgBis)
+                            prediction = modelBis.predict([imgBis])[0]
                             #print(f"le chiffre ici est :{np.argmax(prediction)}")
                             valFinded = np.argmax(prediction)
                             print (valFinded)
