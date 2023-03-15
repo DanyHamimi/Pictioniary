@@ -48,5 +48,18 @@ Pagani:
     - continuation projet: elargir sur d'autres dessins que des chiffres. jeu de données googles sur d'autres images. 
     
     - 400 LOC
+    
+15/03/2023
+Pagani:
+    - commencer à faire la partie réseaxu (serveur en java et clients en python). Il marche en local mais pas en reseaux. Ils ne savent pas pourquoi ?
+    - ils ont regarder jeu de donner quickdraw de google et cherchent et appliquer un modele Lenet pour predire classes de  quickdraw.
+    Ce jeu de données a plus de 300 classes, peut-etre reduire à une cinquantaine.
+    
+    à faire:
+    - resoudre probleme reséaux pour avoir un prg assez jouable sur au moins les chiffres (++)
+    - essayer à entrainer modele sur des images en plus. 
+
+
+
 
     
