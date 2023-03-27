@@ -5,13 +5,65 @@ import tensorflow as tf
 import pygame
 from PIL import Image
 from AITrain.numRec import *
+import socket
+import struct
+import time
+import threading
 
 from config import *
 from utils import drawLine, imagePrediction
 
+# TODO : When lauching the program, the first thing to do is specify the IP address of the server and the port number
+# TODO : If it's not connected, it will display a message and close the program
+# TODO : Ask the user to enter the IP address of the server  via a pop-up window
+
+def send_image(client_socket):
+    while True:
+        try:
+            with open('Imgs/canvas.jpg', 'rb') as file:
+                image_data = file.read()
+            
+            size = len(image_data)
+            size_bytes = size.to_bytes(4, byteorder='big')
+            client_socket.sendall(size_bytes)
+            client_socket.sendall(image_data)
+
+            print(f'Image sent with size {size/1024} bytes.')
+        except Exception as e:
+            print(e)
+        time.sleep(0.5)  # Adjust the sleep time based on your needs.
+
+    
+def receive_and_process_images(client_socket):
+    while True:
+        data = client_socket.recv(4)
+        if not data: break
+        length = struct.unpack('>I', data)[0]
+        img_data = b''
+        while len(img_data) < length:
+            img_data += client_socket.recv(min(length - len(img_data), 4096))
+        # Process the received image here, e.g., save it to disk or display it.
+        print('Image received.')
+        #Create a new file and write the image data into it
+        with open('Imgs/canvasR.jpg', 'wb') as file:
+            file.write(img_data)
+
+
+SERVER_HOST = 'localhost'
+SERVER_PORT = 12345
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((SERVER_HOST, SERVER_PORT))
+
+    # Start the image sending and receiving threads
+send_thread = threading.Thread(target=send_image, args=(client_socket,))
+receive_thread = threading.Thread(target=receive_and_process_images, args=(client_socket,))
+send_thread.start()
+receive_thread.start()
+
 while True:
 
     # Update the display
+    window.blit(pygame.image.load("Imgs/canvasR.jpg"), (980, 420))
     pygame.display.update()
 
     success, img = cap.read()
