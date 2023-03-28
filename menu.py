@@ -21,9 +21,9 @@ button = pygame.transform.scale(buttonBis, (200, 80))
 buttonQuit = pygame.transform.scale(buttonQuitBis, (200, 80))
 
 # Définir les dimensions et la position du logo
-logo_width = 500
-logo_height = 200
-logo_x = 125
+logo_width = 1036
+logo_height = 216
+logo_x = (SCREEN_WIDTH - logo_width) // 2
 logo_y = 70
 
 # Charger la police pour le bouton

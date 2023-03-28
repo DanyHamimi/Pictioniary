@@ -52,10 +52,10 @@ window.blit(background, (0, 0))
 
 
 font = pygame.font.Font('freesansbold.ttf', 32)
-textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (0, 0, 0))
+textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
 window.blit(textNb, (800, 50))
 
-textVal = font.render("Chiffre trouvé : " + str(0), True, (0, 0, 0))
+textVal = font.render("Chiffre trouvé : " + str(0), True, (255, 255, 255))
 window.blit(textVal, (800, 100))
 
 draw = pygame.image.load("Imgs/guess.png")
