@@ -45,7 +45,11 @@ width, height = 1280, 720
 pygame.display.set_mode((width, height))
 pygame.display.set_caption("PictionIAry")
 window = pygame.display.get_surface()
-window.fill((255, 255, 255))
+
+background = pygame.image.load("Imgs/testfond.png")
+window.blit(background, (0, 0))
+
+
 
 font = pygame.font.Font('freesansbold.ttf', 32)
 textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (0, 0, 0))

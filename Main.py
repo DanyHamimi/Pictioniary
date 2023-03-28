@@ -52,7 +52,7 @@ def receive_and_process_images(client_socket):
 SERVER_HOST = '51.210.149.60'
 SERVER_PORT = 12345
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((SERVER_HOST, SERVER_PORT))
+#client_socket.connect((SERVER_HOST, SERVER_PORT))
 
     # Start the image sending and receiving threads
 send_thread = threading.Thread(target=send_image, args=(client_socket,))
@@ -61,7 +61,6 @@ send_thread.start()
 receive_thread.start()
 
 while True:
-
     # Update the display
     window.blit(pygame.image.load("Imgs/canvasR.jpg"), (980, 420))
     pygame.display.update()
