@@ -58,6 +58,6 @@ window.blit(textNb, (800, 50))
 textVal = font.render("Chiffre trouvé : " + str(0), True, (0, 0, 0))
 window.blit(textVal, (800, 100))
 
-draw = pygame.image.load("Imgs/hand.jpg")
+draw = pygame.image.load("Imgs/guess.png")
 window.blit(draw, (0, 480))
 
