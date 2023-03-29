@@ -17,11 +17,12 @@ from utils import drawLine, imagePrediction
 tmpcordX = -1
 tmpcordY = -1
 
+
 # TODO : When lauching the program, the first thing to do is specify the IP address of the server and the port number
 # TODO : If it's not connected, it will display a message and close the program
 # TODO : Ask the user to enter the IP address of the server  via a pop-up window
 
-def send_image(client_socket, score):
+def send_image(client_socket):
     while True:
         try:
             try :
@@ -65,6 +66,10 @@ def receive_and_process_images(client_socket):
             canvasRecived = img.copy().convert('RGBA')
             #Add the canvas to the window
             window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (980, 420))
+            # Add on this canvas the score at the top left
+            textVal = font.render("Score " + str(score), True, (0, 0, 0))
+            window.blit(textVal, (1000, 440))
+
         except Exception as e:
             print(e)
 
@@ -73,6 +78,7 @@ def receive_and_process_images(client_socket):
 
 def main(valToFind):
 
+    global score
     score = 0
     isTesting = False
     print("main:",valToFind)
@@ -82,7 +88,7 @@ def main(valToFind):
     client_socket.connect((SERVER_HOST, SERVER_PORT))
 
     # Start the image sending and receiving threads
-    send_thread = threading.Thread(target=send_image, args=(client_socket,score,))
+    send_thread = threading.Thread(target=send_image, args=(client_socket,))
     receive_thread = threading.Thread(target=receive_and_process_images, args=(client_socket,))
     send_thread.start()
     receive_thread.start()
