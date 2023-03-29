@@ -3,7 +3,7 @@ import java.net.*;
 import java.util.concurrent.*;
 
 public class ImageServer {
-    private static final int PORT = 12345;
+    private static final int PORT = 8080;
     private static final ConcurrentHashMap<Socket, DataOutputStream> clients = new ConcurrentHashMap<>();
 
     public static void main(String[] args) throws IOException {

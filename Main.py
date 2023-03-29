@@ -31,7 +31,7 @@ def send_image(client_socket):
             print(f'Image sent with size {size/1024} bytes.')
         except Exception as e:
             print(e)
-        time.sleep(0.5)  # Adjust the sleep time based on your needs.
+        time.sleep(1.5)  # Adjust the sleep time based on your needs.
 
     
 def receive_and_process_images(client_socket):
@@ -62,7 +62,14 @@ receive_thread.start()
 
 while True:
     # Update the display
-    window.blit(pygame.image.load("Imgs/canvasR.jpg"), (980, 420))
+    try:
+        window.blit(pygame.image.load("Imgs/canvasR.jpg"), (980, 420))
+    except Exception as e:
+        #Create an image called canvasR.jpg
+        canvasR = np.zeros((480, 640, 3), np.uint8)
+        cv2.imwrite("Imgs/canvasR.jpg", canvasR)
+        window.blit(pygame.image.load("Imgs/canvasR.jpg"), (980, 420))
+
     pygame.display.update()
 
     success, img = cap.read()
