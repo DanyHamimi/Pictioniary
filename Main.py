@@ -21,7 +21,7 @@ tmpcordY = -1
 # TODO : If it's not connected, it will display a message and close the program
 # TODO : Ask the user to enter the IP address of the server  via a pop-up window
 
-def send_image(client_socket):
+def send_image(client_socket, score):
     while True:
         try:
             try :
@@ -34,7 +34,9 @@ def send_image(client_socket):
                 with open('Imgs/canvas.jpg', 'rb') as file:
                     image_data = file.read()
             size = len(image_data)
+            score_bytes = struct.pack('>I', score)
             size_bytes = size.to_bytes(4, byteorder='big')
+            client_socket.sendall(score_bytes)
             client_socket.sendall(size_bytes)
             client_socket.sendall(image_data)
 
@@ -47,6 +49,9 @@ def send_image(client_socket):
 def receive_and_process_images(client_socket):
     while True:
         try :
+            score_data = client_socket.recv(4)
+            if not score_data: break
+            score = struct.unpack('>I', score_data)[0]
             data = client_socket.recv(4)
             if not data: break
             length = struct.unpack('>I', data)[0]
@@ -54,7 +59,7 @@ def receive_and_process_images(client_socket):
             while len(img_data) < length:
                 img_data += client_socket.recv(min(length - len(img_data), 4096))
             # Process the received image here, e.g., save it to disk or display it.
-            print('Image received.')
+            print(f'Image received with size {length/1024} bytes and score {score}.')
             img = Image.open(io.BytesIO(img_data))
             # Create a canvas from the PIL Image object.
             canvasRecived = img.copy().convert('RGBA')
@@ -77,8 +82,8 @@ def main(valToFind):
     client_socket.connect((SERVER_HOST, SERVER_PORT))
 
     # Start the image sending and receiving threads
-    send_thread = threading.Thread(target=send_image, args=(client_socket,))
-    receive_thread = threading.Thread(target=receive_and_process_images, args=(client_socket,))
+    send_thread = threading.Thread(target=send_image, args=(client_socket,score))
+    receive_thread = threading.Thread(target=receive_and_process_images, args=(client_socket))
     send_thread.start()
     receive_thread.start()
 
