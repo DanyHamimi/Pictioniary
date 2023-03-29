@@ -13,6 +13,9 @@ import threading
 from config import *
 from utils import drawLine, imagePrediction
 
+tmpcordX = -1
+tmpcordY = -1
+
 # TODO : When lauching the program, the first thing to do is specify the IP address of the server and the port number
 # TODO : If it's not connected, it will display a message and close the program
 # TODO : Ask the user to enter the IP address of the server  via a pop-up window
@@ -156,7 +159,10 @@ while True:
                 else:
                     tmpx8 = 640 - tmpx8
                     isTesting = False
-                    drawLine(tmpx8, tmpy8)
+                    
+                    drawLine(tmpx8, tmpy8, tmpcordX, tmpcordY)
+                    tmpcordX = tmpx8
+                    tmpcordY = tmpy8
 
             mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
 

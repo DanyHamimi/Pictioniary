@@ -6,8 +6,7 @@ import tensorflow as tf
 
 from config import *
 
-def drawLine(a, b):
-    global tmpcordX, tmpcordY
+def drawLine(a, b, tmpcordX, tmpcordY):
     if tmpcordX == -1 and tmpcordY == -1:
         tmpcordX = a
         tmpcordY = b
