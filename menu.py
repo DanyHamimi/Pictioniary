@@ -60,8 +60,8 @@ while True:
                 print("Le bouton Play a été cliqué !")
                 window.fill((0, 0, 0))
                 pygame.display.update()
-                init()
-                main()
+                valTF = init()
+                main(valTF)
             elif buttonQuit_x <= mouse_pos[0] <= buttonQuit_x + buttonQuit_width and buttonQuit_y <= mouse_pos[1] <= buttonQuit_y + buttonQuit_height:
                 print("Le bouton Quit a été cliqué !")
                 pygame.quit()

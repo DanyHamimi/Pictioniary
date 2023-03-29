@@ -4,11 +4,10 @@ import numpy as np
 import tensorflow as tf
 import pygame
 
-isTesting = False
+
 has2Hands = False
 
-valToFind = np.random.randint(0, 9)
-print(valToFind)
+
 valFinded = -2
 # Create an AITrain object
 mnist = tf.keras.datasets.mnist
@@ -51,6 +50,9 @@ font = pygame.font.Font('freesansbold.ttf', 32)
 
 
 def init():
+
+    valToFind = np.random.randint(0, 9)
+    print(valToFind)
     window.blit(background, (0, 0))
 
     textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
@@ -64,4 +66,6 @@ def init():
 
     canvasRecived = np.zeros((350, 350, 3), np.uint8)
     canvasRecived[:] = 255, 255, 255
+
+    return valToFind
 

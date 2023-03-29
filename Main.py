@@ -64,8 +64,10 @@ def receive_and_process_images(client_socket):
             print(e)
 
 
-def main():
+def main(valToFind):
     score = 0
+    isTesting = False
+    print("main:",valToFind)
     SERVER_HOST = '172.20.10.3'
     SERVER_PORT = 8080
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -160,8 +162,9 @@ def main():
                                 textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (0, 0, 0))
                                 window.blit(textNb, (800, 50))
                                 valFinded = -2
-                        except:
+                        except Exception as e:
                             print("error")
+                            print(e)
                     else:
                         tmpx8 = 640 - tmpx8
                         isTesting = False
