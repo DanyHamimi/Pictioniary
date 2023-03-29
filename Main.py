@@ -18,10 +18,6 @@ tmpcordX = -1
 tmpcordY = -1
 
 
-# TODO : When lauching the program, the first thing to do is specify the IP address of the server and the port number
-# TODO : If it's not connected, it will display a message and close the program
-# TODO : Ask the user to enter the IP address of the server  via a pop-up window
-
 def send_image(client_socket):
     while True:
         try:
@@ -29,7 +25,6 @@ def send_image(client_socket):
                 with open('Imgs/canvas.jpg', 'rb') as file:
                     image_data = file.read()
             except Exception as e:
-                #Create white image if no image is found
                 canvas = np.zeros((350, 350, 3), np.uint8)
                 cv2.imwrite("Imgs/canvas.jpg", canvas)
                 with open('Imgs/canvas.jpg', 'rb') as file:
@@ -44,7 +39,7 @@ def send_image(client_socket):
             print(f'Image sent with size {size/1024} bytes.')
         except Exception as e:
             print(e)
-        time.sleep(1)  # Adjust the sleep time based on your needs.
+        time.sleep(1) 
 
     
 def receive_and_process_images(client_socket):
@@ -100,9 +95,6 @@ def main(valToFind):
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         results = hands.process(imgRGB)
 
-        # ... Reste du code principal ...
-
-        # Put a rectangle on the canvas to draw on it at the middle of it (res is 640x480)
         cv2.rectangle(img, (100, 50), (450, 400), (0, 255, 0), 2)
         if results.multi_hand_landmarks and len(results.multi_hand_landmarks) == 2 and has2Hands == False:
             has2Hands = True
@@ -152,8 +144,8 @@ def main(valToFind):
                         if tmpy19 < tmpy20 and tmpy11 < tmpy12 and tmpy15 < tmpy16:
                             canvasToSave[:] = 255, 255, 255
                             canvas[:] = 0, 0, 0
-                            tmpcordX = -1  # Ajoutez cette ligne
-                            tmpcordY = -1  # Ajoutez cette ligne
+                            tmpcordX = -1  
+                            tmpcordY = -1  
                         tmpcordX = -1
                         tmpcordY = -1
                         # print("Doigt Baissé")
@@ -201,25 +193,19 @@ def main(valToFind):
                 pygame.quit()
                 quit()
 
-        # Convert the frame to a Pygame surface
         frame = imgRGB
         frame = np.rot90(frame)
 
-        # add canvasToSave NDArray[uint8] to the window
+
 
         frame = pygame.surfarray.make_surface(frame)
         frameCanvas = pygame.surfarray.make_surface(img)
-        # Rotate the frame 90 degrees
+
         frameCanvas = pygame.transform.rotate(frameCanvas, 90)
 
         frameCanvas = pygame.transform.flip(frameCanvas, False, True)
-
-        # put a white background to the window
-
-        # window.blit(frame, (0, 0))
         window.blit(frameCanvas, (0, 0))
 
-        # Add text score : next to the canvas
         text = font.render("Score : " + str(score), True, (255, 255, 255))
         window.blit(text, (500, 0))
 

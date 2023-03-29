@@ -31,13 +31,7 @@ public class ImageServer {
             try {
                 DataInputStream inputStream = new DataInputStream(clientSocket.getInputStream());
                 while (true) {
-                    byte[] scoreBytes = new byte[4];
-                    inputStream.readFully(scoreBytes, 0, scoreBytes.length);
-                    String scoreStr = new String(scoreBytes);
-                    int score = Integer.parseInt(scoreStr.trim());
-                    byte[] messageBytes = new byte[1024];
-                    inputStream.readFully(messageBytes, 0, messageBytes.length);
-                    String message = new String(messageBytes).trim();
+                    int score = inputStream.readInt();
                     int length = inputStream.readInt();
                     if (length > 0) {
                         byte[] image = new byte[length];
@@ -46,8 +40,7 @@ public class ImageServer {
                                 .filter(entry -> entry.getKey() != clientSocket)
                                 .forEach(entry -> {
                                     try {
-                                        entry.getValue().write(scoreBytes);
-                                        entry.getValue().write(messageBytes);
+                                        entry.getValue().writeInt(score);
                                         entry.getValue().writeInt(length);
                                         entry.getValue().write(image);
                                     } catch (IOException e) {
@@ -66,6 +59,6 @@ public class ImageServer {
                     e.printStackTrace();
                 }
             }
-        }             
+        }        
     }
 }
