@@ -22,7 +22,7 @@ tmpcordY = -1
 # TODO : If it's not connected, it will display a message and close the program
 # TODO : Ask the user to enter the IP address of the server  via a pop-up window
 
-def send_image(client_socket, score, message):
+def send_image(client_socket):
     while True:
         try:
             try:
@@ -36,14 +36,14 @@ def send_image(client_socket, score, message):
                     image_data = file.read()
             size = len(image_data)
             score_bytes = str(score).encode()
-            message_bytes = message.encode()
+            message_bytes = username.encode()
             size_bytes = size.to_bytes(4, byteorder='big')
             client_socket.sendall(score_bytes)
             client_socket.sendall(message_bytes)
             client_socket.sendall(size_bytes)
             client_socket.sendall(image_data)
 
-            print(f'Image sent with size {size/1024} bytes, score {score}, and message {message}.')
+            print(f'Image sent with size {size/1024} bytes, score {score}, and message {username}.')
         except Exception as e:
             print(e)
 
@@ -70,7 +70,7 @@ def receive_and_process_images(client_socket):
             window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (900, 340))
             #Add uper this Player one
             print(f'Image received with size {length/1024} bytes, score {score}, and message {message}.')
-            textPlayer = font.render("Rayane Kaabeche", True, (255, 255, 255))
+            textPlayer = font.render(message, True, (255, 255, 255))
             window.blit(textPlayer, (920, 300))
             textVal = font.render("Score " + str(score), True, (0, 138, 138))
             window.blit(textVal, (920, 360))
