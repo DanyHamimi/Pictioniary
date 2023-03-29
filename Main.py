@@ -36,10 +36,10 @@ def send_image(client_socket):
             client_socket.sendall(size_bytes)
             client_socket.sendall(image_data)
 
-            print(f'Image sent with size {size/1024} bytes.')
+            print(f'Image sent with size {size/1024} ko')
         except Exception as e:
             print(e)
-        time.sleep(1) 
+        time.sleep(0.1) 
 
     
 def receive_and_process_images(client_socket):

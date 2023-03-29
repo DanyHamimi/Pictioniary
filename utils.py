@@ -16,7 +16,9 @@ def drawLine(a, b, tmpcordX, tmpcordY):
     # cv2.imshow("Canvas", canvas)
     tmpcordX = a
     tmpcordY = b
-    cv2.imwrite("Imgs/canvas.jpg", canvasToSave)
+    #Resize the canvas to 350x350
+    canvasBis = cv2.resize(canvas, (350, 350))
+    cv2.imwrite("Imgs/canvas.jpg", canvasBis)
     # create an image from the area (150, 50), (450, 350) of the canvas and save it in the folder
     img = Image.open("Imgs/canvas.jpg")
     # CROP area of the rectangle (100, 50, 450, 30)
