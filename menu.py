@@ -1,15 +1,15 @@
 import pygame
 import math
-from Main import *
+from Main import main
 from config import *
-#from utils import *
+from utils import *
 
 pygame.init()
 
 # Définir les dimensions de l'écran
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-#screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Charger l'image de fond
 background = pygame.image.load("Imgs/testfond.png")
@@ -47,6 +47,32 @@ buttonQuit_height = 80
 buttonQuit_x = (SCREEN_WIDTH - buttonQuit_width) // 2
 buttonQuit_y = logo_y + logo_height + 250
 
+# Popup pour demander le pseudo
+def ask_pseudo():
+    pseudo = ""
+    userBool = True
+    while userBool:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    pseudo = "Guest"
+                    userBool = False
+                elif event.key == pygame.K_BACKSPACE:
+                    pseudo = pseudo[:-1]
+                    userBool = False
+                else:
+                    pseudo += event.unicode
+        window.fill((255, 255, 255))
+        font = pygame.font.SysFont("Arial", 50)
+        text = font.render("Enter your nickname: " + pseudo, True, (0, 0, 0))
+        text_rect = text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+        window.blit(text, text_rect)
+        pygame.display.update()
+
+
 # Boucle principale du jeu
 while True:
     # Gérer les événements
@@ -60,8 +86,9 @@ while True:
                 print("Le bouton Play a été cliqué !")
                 window.fill((0, 0, 0))
                 pygame.display.update()
+                pseudo = ask_pseudo()
                 valTF = init()
-                main(valTF)
+                main(pseudo, valTF)
             elif buttonQuit_x <= mouse_pos[0] <= buttonQuit_x + buttonQuit_width and buttonQuit_y <= mouse_pos[1] <= buttonQuit_y + buttonQuit_height:
                 print("Le bouton Quit a été cliqué !")
                 pygame.quit()
