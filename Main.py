@@ -40,19 +40,22 @@ def send_image(client_socket):
     
 def receive_and_process_images(client_socket):
     while True:
-        data = client_socket.recv(4)
-        if not data: break
-        length = struct.unpack('>I', data)[0]
-        img_data = b''
-        while len(img_data) < length:
-            img_data += client_socket.recv(min(length - len(img_data), 4096))
-        # Process the received image here, e.g., save it to disk or display it.
-        print('Image received.')
-        img = Image.open(io.BytesIO(img_data))
-        # Create a canvas from the PIL Image object.
-        canvasRecived = img.copy().convert('RGBA')
-        #Add the canvas to the window
-        window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (980, 420))
+        try :
+            data = client_socket.recv(4)
+            if not data: break
+            length = struct.unpack('>I', data)[0]
+            img_data = b''
+            while len(img_data) < length:
+                img_data += client_socket.recv(min(length - len(img_data), 4096))
+            # Process the received image here, e.g., save it to disk or display it.
+            print('Image received.')
+            img = Image.open(io.BytesIO(img_data))
+            # Create a canvas from the PIL Image object.
+            canvasRecived = img.copy().convert('RGBA')
+            #Add the canvas to the window
+            window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (980, 420))
+        except Exception as e:
+            print(e)
 
 
 SERVER_HOST = 'localhost'
