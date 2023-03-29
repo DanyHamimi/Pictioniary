@@ -71,6 +71,7 @@ def ask_pseudo():
         text_rect = text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
         window.blit(text, text_rect)
         pygame.display.update()
+        return pseudo
 
 
 # Boucle principale du jeu
