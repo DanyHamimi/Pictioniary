@@ -61,3 +61,7 @@ window.blit(textVal, (800, 100))
 draw = pygame.image.load("Imgs/guess.png")
 window.blit(draw, (0, 480))
 
+
+canvasRecived = np.zeros((350, 350, 3), np.uint8)
+canvasRecived[:] = 255, 255, 255
+

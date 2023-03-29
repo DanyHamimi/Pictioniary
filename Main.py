@@ -9,6 +9,7 @@ import socket
 import struct
 import time
 import threading
+import io
 
 from config import *
 from utils import drawLine, imagePrediction
@@ -34,7 +35,7 @@ def send_image(client_socket):
             print(f'Image sent with size {size/1024} bytes.')
         except Exception as e:
             print(e)
-        time.sleep(1.5)  # Adjust the sleep time based on your needs.
+        time.sleep(1)  # Adjust the sleep time based on your needs.
 
     
 def receive_and_process_images(client_socket):
@@ -47,9 +48,11 @@ def receive_and_process_images(client_socket):
             img_data += client_socket.recv(min(length - len(img_data), 4096))
         # Process the received image here, e.g., save it to disk or display it.
         print('Image received.')
-        #Create a new file and write the image data into it
-        with open('Imgs/canvasR.jpg', 'wb') as file:
-            file.write(img_data)
+        img = Image.open(io.BytesIO(img_data))
+        # Create a canvas from the PIL Image object.
+        canvasRecived = img.copy().convert('RGBA')
+        #Add the canvas to the window
+        window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (980, 420))
 
 
 SERVER_HOST = 'localhost'
@@ -65,13 +68,6 @@ receive_thread.start()
 
 while True:
     # Update the display
-    try:
-        window.blit(pygame.image.load("Imgs/canvasR.jpg"), (980, 420))
-    except Exception as e:
-        #Create an image called canvasR.jpg
-        canvasR = np.zeros((480, 640, 3), np.uint8)
-        cv2.imwrite("Imgs/canvasR.jpg", canvasR)
-        window.blit(pygame.image.load("Imgs/canvasR.jpg"), (980, 420))
 
     pygame.display.update()
 
