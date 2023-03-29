@@ -81,9 +81,9 @@ def receive_and_process_images(client_socket):
 
 
 
-def main(pseudo, valToFind):
+def main(valToFind):
     global username
-    username = pseudo
+    username = ""
     global score
     score = 0
     isTesting = False

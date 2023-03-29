@@ -49,7 +49,7 @@ buttonQuit_y = logo_y + logo_height + 250
 
 # Popup pour demander le pseudo
 def ask_pseudo():
-    pseudo = ""
+    pseudo = "guest"
     userBool = True
     while userBool:
         for event in pygame.event.get():
@@ -60,9 +60,11 @@ def ask_pseudo():
                 if event.key == pygame.K_RETURN:
                     pseudo = "Guest"
                     userBool = False
+                    return pseudo
                 elif event.key == pygame.K_BACKSPACE:
                     pseudo = pseudo[:-1]
                     userBool = False
+                    return pseudo
                 else:
                     pseudo += event.unicode
         window.fill((255, 255, 255))
@@ -71,7 +73,7 @@ def ask_pseudo():
         text_rect = text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
         window.blit(text, text_rect)
         pygame.display.update()
-        return pseudo
+
 
 
 # Boucle principale du jeu
@@ -87,9 +89,9 @@ while True:
                 print("Le bouton Play a été cliqué !")
                 window.fill((0, 0, 0))
                 pygame.display.update()
-                pseudo = ask_pseudo()
+                #pseudo = ask_pseudo()
                 valTF = init()
-                main(pseudo, valTF)
+                main(valTF)
             elif buttonQuit_x <= mouse_pos[0] <= buttonQuit_x + buttonQuit_width and buttonQuit_y <= mouse_pos[1] <= buttonQuit_y + buttonQuit_height:
                 print("Le bouton Quit a été cliqué !")
                 pygame.quit()
