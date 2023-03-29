@@ -47,6 +47,13 @@ window = pygame.display.get_surface()
 background = pygame.image.load("Imgs/testfond.png")
 window.blit(background, (0, 0))
 font = pygame.font.Font('freesansbold.ttf', 32)
+but2FindBis = pygame.image.load("Imgs/testbuttondany.png")
+butFindedBis = pygame.image.load("Imgs/testbuttondany.png")
+
+buttonVal2Find = pygame.transform.scale(but2FindBis, (500, 70))
+buttonValFinded = pygame.transform.scale(butFindedBis, (500, 70))
+
+    #Add buttons to the window
 
 
 def init():
@@ -54,12 +61,14 @@ def init():
     valToFind = np.random.randint(0, 9)
     print(valToFind)
     window.blit(background, (0, 0))
+    window.blit(buttonVal2Find, (750, 50))
+    window.blit(buttonValFinded, (750, 150))
 
     textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
-    window.blit(textNb, (800, 50))
+    window.blit(textNb, (825, 65))
 
     textVal = font.render("Chiffre trouvé : " + str(0), True, (255, 255, 255))
-    window.blit(textVal, (800, 100))
+    window.blit(textVal, (825, 165))
 
     draw = pygame.image.load("Imgs/guess.png")
     window.blit(draw, (0, 480))

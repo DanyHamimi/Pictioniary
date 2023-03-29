@@ -25,7 +25,6 @@ def drawLine(a, b, tmpcordX, tmpcordY):
 
 
 def imagePrediction():
-    pygame.draw.rect(window, (255, 255, 255), (800, 100, 400, 100))
     imgBis = cv2.imread("Imgs/canvas.jpg")[:, :, 0]
     width = 28
     height = 28

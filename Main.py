@@ -64,7 +64,10 @@ def receive_and_process_images(client_socket):
             print(e)
 
 
+
+
 def main(valToFind):
+
     score = 0
     isTesting = False
     print("main:",valToFind)
@@ -152,15 +155,15 @@ def main(valToFind):
                         try:
                             valFinded = imagePrediction()
                             print(valFinded)
-                            textVal = font.render("Chiffre trouvé : " + str(valFinded), True, (0, 0, 0))
-                            window.blit(textVal, (800, 100))
+                            window.blit(buttonValFinded, (750, 150))
+                            textVal = font.render("Chiffre trouvé : " + str(valFinded), True, (255, 255, 255))
+                            window.blit(textVal, (825, 165))
                             if valToFind == valFinded:
                                 score += 1
-                                textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
-                                window.blit(textNb, (800, 50))
                                 valToFind = np.random.randint(0, 9)
-                                textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (0, 0, 0))
-                                window.blit(textNb, (800, 50))
+                                window.blit(buttonVal2Find, (750, 50))
+                                textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
+                                window.blit(textNb, (825, 65))
                                 valFinded = -2
                         except Exception as e:
                             print("error")
