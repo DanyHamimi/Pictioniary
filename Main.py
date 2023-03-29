@@ -24,9 +24,15 @@ tmpcordY = -1
 def send_image(client_socket):
     while True:
         try:
-            with open('Imgs/canvas.jpg', 'rb') as file:
-                image_data = file.read()
-            
+            try :
+                with open('Imgs/canvas.jpg', 'rb') as file:
+                    image_data = file.read()
+            except Exception as e:
+                #Create white image if no image is found
+                canvas = np.zeros((350, 350, 3), np.uint8)
+                cv2.imwrite("Imgs/canvas.jpg", canvas)
+                with open('Imgs/canvas.jpg', 'rb') as file:
+                    image_data = file.read()
             size = len(image_data)
             size_bytes = size.to_bytes(4, byteorder='big')
             client_socket.sendall(size_bytes)
