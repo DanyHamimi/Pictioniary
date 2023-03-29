@@ -59,16 +59,13 @@ def receive_and_process_images(client_socket):
             img_data = b''
             while len(img_data) < length:
                 img_data += client_socket.recv(min(length - len(img_data), 4096))
-            # Process the received image here, e.g., save it to disk or display it.
             print(f'Image received with size {length/1024} bytes and score {score}.')
             img = Image.open(io.BytesIO(img_data))
-            # Create a canvas from the PIL Image object.
             canvasRecived = img.copy().convert('RGBA')
-            #Add the canvas to the window
-            window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (980, 420))
-            # Add on this canvas the score at the top left
+            canvasRecived = canvasRecived.resize((350, 350))
+            window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (900, 340))
             textVal = font.render("Score " + str(score), True, (0, 138, 138))
-            window.blit(textVal, (1000, 440))
+            window.blit(textVal, (920, 360))
 
         except Exception as e:
             print(e)
