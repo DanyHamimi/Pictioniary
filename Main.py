@@ -25,7 +25,7 @@ tmpcordY = -1
 def send_image(client_socket):
     while True:
         try:
-            try:
+            try :
                 with open('Imgs/canvas.jpg', 'rb') as file:
                     image_data = file.read()
             except Exception as e:
@@ -35,43 +35,35 @@ def send_image(client_socket):
                 with open('Imgs/canvas.jpg', 'rb') as file:
                     image_data = file.read()
             size = len(image_data)
-            score_bytes = str(score).encode()
-            message_bytes = username.encode()
+            score_bytes = struct.pack('>I', score)
             size_bytes = size.to_bytes(4, byteorder='big')
             client_socket.sendall(score_bytes)
-            client_socket.sendall(message_bytes)
             client_socket.sendall(size_bytes)
             client_socket.sendall(image_data)
 
-            print(f'Image sent with size {size/1024} bytes, score {score}, and message {username}.')
+            print(f'Image sent with size {size/1024} bytes.')
         except Exception as e:
             print(e)
-
+        time.sleep(1)  # Adjust the sleep time based on your needs.
 
     
 def receive_and_process_images(client_socket):
     while True:
-        try:
+        try :
             score_data = client_socket.recv(4)
             if not score_data: break
-            score = int(score_data.decode().strip())
-            message_data = client_socket.recv(1024)
-            if not message_data: break
-            message = message_data.decode().strip()
+            score = struct.unpack('>I', score_data)[0]
             data = client_socket.recv(4)
             if not data: break
             length = struct.unpack('>I', data)[0]
             img_data = b''
             while len(img_data) < length:
                 img_data += client_socket.recv(min(length - len(img_data), 4096))
+            print(f'Image received with size {length/1024} bytes and score {score}.')
             img = Image.open(io.BytesIO(img_data))
             canvasRecived = img.copy().convert('RGBA')
             canvasRecived = canvasRecived.resize((350, 350))
             window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (900, 340))
-            #Add uper this Player one
-            print(f'Image received with size {length/1024} bytes, score {score}, and message {message}.')
-            textPlayer = font.render(message, True, (255, 255, 255))
-            window.blit(textPlayer, (920, 300))
             textVal = font.render("Score " + str(score), True, (0, 138, 138))
             window.blit(textVal, (920, 360))
 
