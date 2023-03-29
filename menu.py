@@ -1,12 +1,15 @@
 import pygame
 import math
+from Main import *
+from config import *
+#from utils import *
 
 pygame.init()
 
 # Définir les dimensions de l'écran
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+#screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Charger l'image de fond
 background = pygame.image.load("Imgs/testfond.png")
@@ -55,6 +58,10 @@ while True:
             mouse_pos = pygame.mouse.get_pos()
             if button_x <= mouse_pos[0] <= button_x + button_width and button_y <= mouse_pos[1] <= button_y + button_height:
                 print("Le bouton Play a été cliqué !")
+                window.fill((0, 0, 0))
+                pygame.display.update()
+                init()
+                main()
             elif buttonQuit_x <= mouse_pos[0] <= buttonQuit_x + buttonQuit_width and buttonQuit_y <= mouse_pos[1] <= buttonQuit_y + buttonQuit_height:
                 print("Le bouton Quit a été cliqué !")
                 pygame.quit()
@@ -64,16 +71,16 @@ while True:
     logo_y_offset = math.sin(time * 3) * 20
 
     # Afficher l'image de fond
-    screen.blit(background, (0, 0))
+    window.blit(background, (0, 0))
 
     # Afficher le logo
-    screen.blit(logo, (logo_x, logo_y + logo_y_offset))
+    window.blit(logo, (logo_x, logo_y + logo_y_offset))
 
     # Afficher l'image du bouton
-    screen.blit(button, (button_x, button_y))
+    window.blit(button, (button_x, button_y))
 
     # Afficher l'image du bouton
-    screen.blit(buttonQuit, (buttonQuit_x, buttonQuit_y))
+    window.blit(buttonQuit, (buttonQuit_x, buttonQuit_y))
 
     # Rafraîchir l'écran
     pygame.display.update()

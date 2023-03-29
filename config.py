@@ -10,7 +10,6 @@ has2Hands = False
 valToFind = np.random.randint(0, 9)
 print(valToFind)
 valFinded = -2
-score = 0
 # Create an AITrain object
 mnist = tf.keras.datasets.mnist
 (x_train, y_train), (x_test, y_test) = (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -48,20 +47,21 @@ window = pygame.display.get_surface()
 
 background = pygame.image.load("Imgs/testfond.png")
 window.blit(background, (0, 0))
-
-
-
 font = pygame.font.Font('freesansbold.ttf', 32)
-textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
-window.blit(textNb, (800, 50))
-
-textVal = font.render("Chiffre trouvé : " + str(0), True, (255, 255, 255))
-window.blit(textVal, (800, 100))
-
-draw = pygame.image.load("Imgs/guess.png")
-window.blit(draw, (0, 480))
 
 
-canvasRecived = np.zeros((350, 350, 3), np.uint8)
-canvasRecived[:] = 255, 255, 255
+def init():
+    window.blit(background, (0, 0))
+
+    textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
+    window.blit(textNb, (800, 50))
+
+    textVal = font.render("Chiffre trouvé : " + str(0), True, (255, 255, 255))
+    window.blit(textVal, (800, 100))
+
+    draw = pygame.image.load("Imgs/guess.png")
+    window.blit(draw, (0, 480))
+
+    canvasRecived = np.zeros((350, 350, 3), np.uint8)
+    canvasRecived[:] = 255, 255, 255
 
