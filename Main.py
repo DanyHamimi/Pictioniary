@@ -67,7 +67,7 @@ def receive_and_process_images(client_socket):
             #Add the canvas to the window
             window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (980, 420))
             # Add on this canvas the score at the top left
-            textVal = font.render("Score " + str(score), True, (0, 0, 0))
+            textVal = font.render("Score " + str(score), True, (0, 138, 138))
             window.blit(textVal, (1000, 440))
 
         except Exception as e:
