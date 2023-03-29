@@ -82,8 +82,8 @@ def main(valToFind):
     client_socket.connect((SERVER_HOST, SERVER_PORT))
 
     # Start the image sending and receiving threads
-    send_thread = threading.Thread(target=send_image, args=(client_socket,score))
-    receive_thread = threading.Thread(target=receive_and_process_images, args=(client_socket))
+    send_thread = threading.Thread(target=send_image, args=(client_socket,score,))
+    receive_thread = threading.Thread(target=receive_and_process_images, args=(client_socket,))
     send_thread.start()
     receive_thread.start()
 
