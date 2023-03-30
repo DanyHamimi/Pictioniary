@@ -47,7 +47,6 @@ buttonQuit_height = 80
 buttonQuit_x = (SCREEN_WIDTH - buttonQuit_width) // 2
 buttonQuit_y = logo_y + logo_height + 250
 
-print(index_to_letter(1))
 # Popup pour demander le pseudo
 def ask_pseudo():
     pseudo = "guest"
