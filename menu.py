@@ -47,6 +47,7 @@ buttonQuit_height = 80
 buttonQuit_x = (SCREEN_WIDTH - buttonQuit_width) // 2
 buttonQuit_y = logo_y + logo_height + 250
 
+print(index_to_letter(1))
 # Popup pour demander le pseudo
 def ask_pseudo():
     pseudo = "guest"
@@ -67,9 +68,9 @@ def ask_pseudo():
                     return pseudo
                 else:
                     pseudo += event.unicode
-        window.fill((255, 255, 255))
+        window.blit(background,(0,0))
         font = pygame.font.SysFont("Arial", 50)
-        text = font.render("Enter your nickname: " + pseudo, True, (0, 0, 0))
+        text = font.render("Enter your nickname: " + pseudo, True, (255, 255, 255))
         text_rect = text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
         window.blit(text, text_rect)
         pygame.display.update()

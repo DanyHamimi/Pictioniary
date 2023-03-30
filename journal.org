@@ -59,6 +59,23 @@ Pagani:
     - resoudre probleme reséaux pour avoir un prg assez jouable sur au moins les chiffres (++)
     - essayer à entrainer modele sur des images en plus. 
 
+29/03/23:
+Pagani:
+    - resolu pb reseaux: jeu chiffres resolus
+    - bug : images adversaires pas trop fluides car flut image et pas video / ou aussi pb resize image
+    - possible developpement : plusieurs jouers sur la même partie
+    - autre possible developpement : plusieurs partie sur le même serveur
+    - expliciter taux exactitude modele adopté
+    - possible developpement : eteindre jeu de donner à EMNIST : alphanumerique
+    - LOC 212 + 50 + 360 + 81 
+    
+À FAIRE:
+    - resoudre bug fludiité
+    - developper la partie reseau (pluseirus jouers / plusieurs partie)
+    - passer à EMNIST
+    - nettoyer code, faire documentation
+    
+à se voir le 12 avril 
 
 
 
