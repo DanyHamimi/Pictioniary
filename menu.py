@@ -67,9 +67,9 @@ def ask_pseudo():
                     return pseudo
                 else:
                     pseudo += event.unicode
-        window.fill((255, 255, 255))
+        window.blit(background,(0,0))
         font = pygame.font.SysFont("Arial", 50)
-        text = font.render("Enter your nickname: " + pseudo, True, (0, 0, 0))
+        text = font.render("Enter your nickname: " + pseudo, True, (255, 255, 255))
         text_rect = text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
         window.blit(text, text_rect)
         pygame.display.update()

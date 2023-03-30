@@ -39,7 +39,7 @@ def send_image(client_socket):
             print(f'Image sent with size {size/1024} bytes.')
         except Exception as e:
             print(e)
-        time.sleep(1) 
+        time.sleep(0.1)
 
     
 def receive_and_process_images(client_socket):
@@ -78,7 +78,7 @@ def main(valToFind):
     SERVER_HOST = '172.20.10.3'
     SERVER_PORT = 8080
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((SERVER_HOST, SERVER_PORT))
+    #client_socket.connect((SERVER_HOST, SERVER_PORT))
 
     # Start the image sending and receiving threads
     send_thread = threading.Thread(target=send_image, args=(client_socket,))
