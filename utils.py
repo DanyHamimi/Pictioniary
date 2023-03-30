@@ -7,7 +7,6 @@ from PIL import ImageOps
 
 from config import *
 
-
 def drawLine(a, b, tmpcordX, tmpcordY):
     if tmpcordX == -1 and tmpcordY == -1:
         tmpcordX = a
@@ -18,13 +17,8 @@ def drawLine(a, b, tmpcordX, tmpcordY):
     # cv2.imshow("Canvas", canvas)
     tmpcordX = a
     tmpcordY = b
-<<<<<<< HEAD
     #Resize the canvas to 350x350
     #canvasBis = cv2.resize(canvas, (350, 350))
-=======
-    # Resize the canvas to 350x350
-    # canvasBis = cv2.resize(canvas, (350, 350))
->>>>>>> 035cfac4469d7a82b41c0731f766db020b04d2f5
     cv2.imwrite("Imgs/canvasBis.jpg", canvasToSave)
     img = Image.open("Imgs/canvasBis.jpg")
     img = img.crop((200, 50, 550, 400))
