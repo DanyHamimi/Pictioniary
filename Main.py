@@ -155,9 +155,10 @@ def main(valToFind):
                         print("photo")
                         try:
                             valFinded = imagePrediction()
-                            print(valFinded)
+                            #print(valFinded)
+                            print(index_to_letter(valFinded))
                             window.blit(buttonValFinded, (750, 150))
-                            textVal = font.render("Chiffre trouvé : " + str(valFinded), True, (255, 255, 255))
+                            textVal = font.render("Chiffre trouvé : " + str(valFinded) + " "+index_to_letter(valFinded), True, (255, 255, 255))
                             window.blit(textVal, (825, 165))
                             if valToFind == valFinded:
                                 score += 1
