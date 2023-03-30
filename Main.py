@@ -21,14 +21,15 @@ tmpcordY = -1
 def send_image(client_socket):
     while True:
         try:
-            try :
-                with open('Imgs/canvas.jpg', 'rb') as file:
-                    image_data = file.read()
-            except Exception as e:
-                canvas = np.zeros((350, 350, 3), np.uint8)
-                cv2.imwrite("Imgs/canvas.jpg", canvas)
-                with open('Imgs/canvas.jpg', 'rb') as file:
-                    image_data = file.read()
+            # Capture an image from the canvas
+
+            canvas_img = Image.fromarray(canvasToSave)
+            canvas_img = canvas_img.crop((200, 50, 550, 400))
+            canvas_img = canvas_img.resize((350, 350))
+            img_byte_arr = io.BytesIO()
+            canvas_img.save(img_byte_arr, format='JPEG')
+            image_data = img_byte_arr.getvalue()
+
             size = len(image_data)
             score_bytes = struct.pack('>I', score)
             size_bytes = size.to_bytes(4, byteorder='big')
@@ -39,7 +40,8 @@ def send_image(client_socket):
             print(f'Image sent with size {size/1024} ko')
         except Exception as e:
             print(e)
-        time.sleep(0.1) 
+        time.sleep(0.01)
+
 
     
 def receive_and_process_images(client_socket):
@@ -75,7 +77,7 @@ def main(valToFind):
     score = 0
     isTesting = False
     print("main:",valToFind)
-    SERVER_HOST = '172.20.10.3'
+    SERVER_HOST = 'localhost'
     SERVER_PORT = 8080
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((SERVER_HOST, SERVER_PORT))

@@ -3,6 +3,7 @@ import numpy as np
 import pygame
 from PIL import Image
 import tensorflow as tf
+from PIL import ImageOps
 
 from config import *
 
