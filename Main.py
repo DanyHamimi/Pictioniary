@@ -21,8 +21,6 @@ tmpcordY = -1
 def send_image(client_socket):
     while True:
         try:
-            # Capture an image from the canvas
-
             canvas_img = Image.fromarray(canvasToSave)
             canvas_img = canvas_img.crop((200, 50, 550, 400))
             canvas_img = canvas_img.resize((350, 350))
@@ -71,6 +69,7 @@ def receive_and_process_images(client_socket):
 
 
 def main(valToFind):
+    global byteFrame
     global username
     username = ""
     global score
@@ -190,18 +189,21 @@ def main(valToFind):
         # cv2.imshow("Image", img)
         cv2.waitKey(1)
 
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
 
-        frame = imgRGB
+        frame = img_rgb
         frame = np.rot90(frame)
 
 
 
         frame = pygame.surfarray.make_surface(frame)
-        frameCanvas = pygame.surfarray.make_surface(img)
+        frameCanvas = pygame.surfarray.make_surface(img_rgb)
 
         frameCanvas = pygame.transform.rotate(frameCanvas, 90)
 
@@ -210,4 +212,11 @@ def main(valToFind):
 
         text = font.render("Score : " + str(score), True, (255, 255, 255))
         window.blit(text, (500, 0))
+
+        #Save canvas to image
+        byteFrame = pygame.image.tostring(frameCanvas, 'RGBA')
+
+        #Transform framecanvas to image
+        
+        
 
