@@ -17,7 +17,6 @@ from utils import drawLine, imagePrediction
 tmpcordX = -1
 tmpcordY = -1
 
-#Fonction auxiliaire pour éviter unpack requires a buffer of 4 bytes error lors de la reception
 def recvall(sock, n):
     data = bytearray()
     while len(data) < n:
@@ -37,6 +36,7 @@ def send_image(client_socket):
             canvas_img.save(img_byte_arr, format='JPEG')
             image_data = img_byte_arr.getvalue()
 
+
             size = len(image_data)
             score_bytes = struct.pack('>I', score)
             size_bytes = size.to_bytes(4, byteorder='big')
@@ -53,18 +53,16 @@ def send_image(client_socket):
     
 def receive_and_process_images(client_socket):
     while True:
-        try:
-            score_data = recvall(client_socket, 4)
+        try :
+            score_data = client_socket.recv(4)
             if not score_data: break
             score = struct.unpack('>I', score_data)[0]
-            
-            data = recvall(client_socket, 4)
+            data = client_socket.recv(4)
             if not data: break
             length = struct.unpack('>I', data)[0]
-
-            img_data = recvall(client_socket, length)
-            if not img_data: break
-
+            img_data = b''
+            while len(img_data) < length:
+                img_data += client_socket.recv(min(length - len(img_data), 4096))
             print(f'Image received with size {length/1024} bytes and score {score}.')
             img = Image.open(io.BytesIO(img_data))
             canvasRecived = img.copy().convert('RGBA')
@@ -80,7 +78,10 @@ def receive_and_process_images(client_socket):
 
 
 
+
+
 def main(valToFind):
+    global imageFrame
     global byteFrame
     global username
     username = ""
@@ -88,19 +89,17 @@ def main(valToFind):
     score = 0
     isTesting = False
     print("main:",valToFind)
-    SERVER_HOST = 'rayanekaabeche.fr'
+    SERVER_HOST = 'localhost'
     SERVER_PORT = 8080
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((SERVER_HOST, SERVER_PORT))
 
-    # Start the image sending and receiving threads
     send_thread = threading.Thread(target=send_image, args=(client_socket,))
     receive_thread = threading.Thread(target=receive_and_process_images, args=(client_socket,))
     send_thread.start()
     receive_thread.start()
 
     while True:
-        # Update the display
 
         pygame.display.update()
 
@@ -209,9 +208,9 @@ def main(valToFind):
                 pygame.quit()
                 quit()
 
+    
         frame = img_rgb
         frame = np.rot90(frame)
-
 
 
         frame = pygame.surfarray.make_surface(frame)
@@ -228,7 +227,7 @@ def main(valToFind):
         #Save canvas to image
         byteFrame = pygame.image.tostring(frameCanvas, 'RGBA')
 
-        #Transform framecanvas to image
+    
         
         
 
