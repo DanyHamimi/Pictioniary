@@ -17,6 +17,15 @@ from utils import drawLine, imagePrediction
 tmpcordX = -1
 tmpcordY = -1
 
+#Fonction auxiliaire pour éviter unpack requires a buffer of 4 bytes error lors de la reception
+def recvall(sock, n):
+    data = bytearray()
+    while len(data) < n:
+        packet = sock.recv(n - len(data))
+        if not packet:
+            return None
+        data.extend(packet)
+    return data
 
 def send_image(client_socket):
     while True:
@@ -44,16 +53,18 @@ def send_image(client_socket):
     
 def receive_and_process_images(client_socket):
     while True:
-        try :
-            score_data = client_socket.recv(4)
+        try:
+            score_data = recvall(client_socket, 4)
             if not score_data: break
             score = struct.unpack('>I', score_data)[0]
-            data = client_socket.recv(4)
+            
+            data = recvall(client_socket, 4)
             if not data: break
             length = struct.unpack('>I', data)[0]
-            img_data = b''
-            while len(img_data) < length:
-                img_data += client_socket.recv(min(length - len(img_data), 4096))
+
+            img_data = recvall(client_socket, length)
+            if not img_data: break
+
             print(f'Image received with size {length/1024} bytes and score {score}.')
             img = Image.open(io.BytesIO(img_data))
             canvasRecived = img.copy().convert('RGBA')
@@ -64,6 +75,7 @@ def receive_and_process_images(client_socket):
 
         except Exception as e:
             print(e)
+
 
 
 
