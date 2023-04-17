@@ -80,7 +80,7 @@ def receive_and_process_images(client_socket):
 
 
 
-def main(valToFind):
+def main(valToFind, servIndex):
     global imageFrame
     global byteFrame
     global username
@@ -92,7 +92,7 @@ def main(valToFind):
     SERVER_HOST = 'localhost'
     SERVER_PORT = 8081
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((SERVER_HOST, SERVER_PORT))
+    #client_socket.connect((SERVER_HOST, SERVER_PORT))
 
     send_thread = threading.Thread(target=send_image, args=(client_socket,))
     receive_thread = threading.Thread(target=receive_and_process_images, args=(client_socket,))

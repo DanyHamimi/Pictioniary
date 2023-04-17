@@ -9,7 +9,7 @@ pygame.init()
 # Définir les dimensions de l'écran
 server_button_width = 200
 server_button_height = 80
-server_button_start_y = 250
+server_button_start_y = 200
 server_button_spacing = 100
 server_button_join_width = 150
 server_button_join_height = 50
@@ -54,43 +54,6 @@ buttonQuit_x = (SCREEN_WIDTH - buttonQuit_width) // 2
 buttonQuit_y = logo_y + logo_height + 250
 
 # Popup pour demander le pseudo
-def ask_pseudo():
-    pseudo = "guest"
-    userBool = True
-    while userBool:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-                for i, (join_button, _) in enumerate(join_buttons):
-                    if join_button.collidepoint(mouse_pos):
-                        print(f"Le bouton Rejoindre du serveur {i + 1} a été cliqué !")
-                        window.fill((0, 0, 0))
-                        pygame.display.update()
-                        server_id = i + 1
-                        valTF = init()
-                        main(server_id, valTF)  # Passer l'ID du serveur en tant qu'argument
-                        running = False
-                        break
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    pseudo = "Guest"
-                    userBool = False
-                    return pseudo
-                elif event.key == pygame.K_BACKSPACE:
-                    pseudo = pseudo[:-1]
-                    userBool = False
-                    return pseudo
-                else:
-                    pseudo += event.unicode
-        window.blit(background,(0,0))
-        font = pygame.font.SysFont("Arial", 50)
-        text = font.render("Enter your nickname: " + pseudo, True, (255, 255, 255))
-        text_rect = text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
-        window.blit(text, text_rect)
-        pygame.display.update()
 
 def show_servers(window):
     font = pygame.font.SysFont("Arial", 30)
@@ -123,7 +86,7 @@ def show_servers(window):
                         window.fill((0, 0, 0))
                         pygame.display.update()
                         valTF = init()
-                        main(valTF)
+                        main(valTF,i+1)
                         running = False
                         break
 
