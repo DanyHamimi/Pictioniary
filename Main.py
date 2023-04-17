@@ -57,34 +57,40 @@ def receive_and_process_images(client_socket):
             int_data = client_socket.recv(4)
             if not int_data: break
             int_val = struct.unpack('>I', int_data)[0]
-            print(int_val)
+            print("On a recu" , int_val)
             if(int_val != 4294965296):
                 score_data = client_socket.recv(4)
                 if not score_data: break
                 score = struct.unpack('>I', score_data)[0]
                 data = client_socket.recv(4)
-                print("ici ?")
                 if not data: break
                 length = struct.unpack('>I', data)[0]
                 img_data = b''
-                print("ou la")
                 while len(img_data) < length:
                     img_data += client_socket.recv(min(length - len(img_data), 4096))
                 #print(f'Image received with size {length/1024} bytes and score {score}.')
                 img = Image.open(io.BytesIO(img_data))
-                print("la")
                 canvasRecived = img.copy().convert('RGBA')
                 canvasRecived = canvasRecived.resize((350, 350))
                 window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (900, 340))
                 textVal = font.render("Score " + str(score), True, (0, 138, 138))
                 window.blit(textVal, (920, 360))
-                print("hello")
             else : 
-                print("LETSGOOO")
+                print('on rentre ici')
+                int_newValue = client_socket.recv(4)
+                if not int_newValue: break
+                newValue = struct.unpack('>I', int_newValue)[0]
+                print("newValue",newValue)
+                window.blit(buttonVal2Find, (750, 50))
+                textNb = font.render("Chiffre à trouver : " + str(newValue), True, (255, 255, 255))
+                window.blit(textNb, (825, 65))
+                valToFind = newValue
+                valFinded = -2
+
 
         except Exception as e:
             print(e)
-            break
+            continue
 
 
 
@@ -93,6 +99,8 @@ def receive_and_process_images(client_socket):
 
 
 def main(valToFind, servIndex):
+    
+    global valFinded
     global imageFrame
     global byteFrame
     global username
@@ -117,7 +125,7 @@ def main(valToFind, servIndex):
     receive_thread.start()
 
     while True:
-
+        print(valToFind)
         pygame.display.update()
 
         success, img = cap.read()
@@ -191,10 +199,10 @@ def main(valToFind, servIndex):
                             if valToFind == valFinded:
                                 score += 1
                                 valToFind = np.random.randint(0, 9)
-                                window.blit(buttonVal2Find, (750, 50))
-                                textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
-                                window.blit(textNb, (825, 65))
-                                valFinded = -2
+                                #window.blit(buttonVal2Find, (750, 50))
+                                #textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
+                                #window.blit(textNb, (825, 65))
+                                #valFinded = -2
                         except Exception as e:
                             print("error")
                             print(e)

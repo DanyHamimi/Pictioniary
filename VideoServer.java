@@ -26,7 +26,7 @@ public class VideoServer {
 
     static class Game {
         ConcurrentHashMap<Socket, DataOutputStream> clients = new ConcurrentHashMap<>();
-        int valToFind = -1;
+        int valToFind = 9;
         ConcurrentHashMap<Socket, Integer> scores = new ConcurrentHashMap<>();
 
         public void updateValToFind() {
@@ -62,6 +62,7 @@ public class VideoServer {
                         for (DataOutputStream out : game.clients.values()) {
                             out.writeInt(-2000);
                             System.out.print("ENVOYE1");
+                            out.writeInt(game.valToFind);
                         }
                     }
                 } else {
@@ -81,6 +82,7 @@ public class VideoServer {
                             for (DataOutputStream out : game.clients.values()) {
                                 out.writeInt(-2000);
                                 System.out.print("ENVOYE2");
+                                out.writeInt(game.valToFind);
                             }
                         }
 
