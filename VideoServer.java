@@ -57,10 +57,11 @@ public class VideoServer {
                     game.scores.put(clientSocket, 0);
                     System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " ajouté à la partie " + servIndexUser);
 
-                    if (game.clients.size() == MAX_PLAYERS_PER_GAME) {
+                    if (game.clients.size() > 0) {
                         game.updateValToFind();
                         for (DataOutputStream out : game.clients.values()) {
-                            out.writeUTF("NEW_VAL_TO_FIND " + game.valToFind);
+                            out.writeInt(-2000);
+                            System.out.print("ENVOYE1");
                         }
                     }
                 } else {
@@ -78,7 +79,8 @@ public class VideoServer {
                             game.scores.put(clientSocket, score);
                             game.updateValToFind();
                             for (DataOutputStream out : game.clients.values()) {
-                                out.writeUTF("NEW_VAL_TO_FIND " + game.valToFind);
+                                out.writeInt(-2000);
+                                System.out.print("ENVOYE2");
                             }
                         }
 
@@ -86,10 +88,11 @@ public class VideoServer {
                                 .filter(entry -> entry.getKey() != clientSocket)
                                 .forEach(entry -> {
                                     try {
-                                        entry.getValue().writeInt(game.valToFind);
+                                        entry.getValue().writeInt(2);
                                         entry.getValue().writeInt(score);
                                         entry.getValue().writeInt(length);
                                         entry.getValue().write(image);
+                                        System.out.print("ENVOYE3");
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }

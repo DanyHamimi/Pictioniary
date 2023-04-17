@@ -54,29 +54,37 @@ def send_image(client_socket):
 def receive_and_process_images(client_socket):
     while True:
         try :
-            valTofind_data = client_socket.recv(4)
-            if not valTofind_data: break
-            valTovind = struct.unpack('>I', valTofind_data)[0]
-            print("valTofind_data",valTovind)
-            score_data = client_socket.recv(4)
-            if not score_data: break
-            score = struct.unpack('>I', score_data)[0]
-            data = client_socket.recv(4)
-            if not data: break
-            length = struct.unpack('>I', data)[0]
-            img_data = b''
-            while len(img_data) < length:
-                img_data += client_socket.recv(min(length - len(img_data), 4096))
-            #print(f'Image received with size {length/1024} bytes and score {score}.')
-            img = Image.open(io.BytesIO(img_data))
-            canvasRecived = img.copy().convert('RGBA')
-            canvasRecived = canvasRecived.resize((350, 350))
-            window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (900, 340))
-            textVal = font.render("Score " + str(score), True, (0, 138, 138))
-            window.blit(textVal, (920, 360))
+            int_data = client_socket.recv(4)
+            if not int_data: break
+            int_val = struct.unpack('>I', int_data)[0]
+            print(int_val)
+            if(int_val != 4294965296):
+                score_data = client_socket.recv(4)
+                if not score_data: break
+                score = struct.unpack('>I', score_data)[0]
+                data = client_socket.recv(4)
+                print("ici ?")
+                if not data: break
+                length = struct.unpack('>I', data)[0]
+                img_data = b''
+                print("ou la")
+                while len(img_data) < length:
+                    img_data += client_socket.recv(min(length - len(img_data), 4096))
+                #print(f'Image received with size {length/1024} bytes and score {score}.')
+                img = Image.open(io.BytesIO(img_data))
+                print("la")
+                canvasRecived = img.copy().convert('RGBA')
+                canvasRecived = canvasRecived.resize((350, 350))
+                window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (900, 340))
+                textVal = font.render("Score " + str(score), True, (0, 138, 138))
+                window.blit(textVal, (920, 360))
+                print("hello")
+            else : 
+                print("LETSGOOO")
 
         except Exception as e:
             print(e)
+            break
 
 
 
@@ -95,7 +103,7 @@ def main(valToFind, servIndex):
     score = 0
     isTesting = False
     print("main:",valToFind)
-    SERVER_HOST = 'localhost'
+    SERVER_HOST = 'rayanekaabeche.fr'
     SERVER_PORT = 8080
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((SERVER_HOST, SERVER_PORT))
