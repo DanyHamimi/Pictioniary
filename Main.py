@@ -84,15 +84,20 @@ def main(valToFind, servIndex):
     global imageFrame
     global byteFrame
     global username
+    global servIndexUser
+    servIndexUser = servIndex
     username = ""
     global score
     score = 0
     isTesting = False
     print("main:",valToFind)
     SERVER_HOST = 'localhost'
-    SERVER_PORT = 8081
+    SERVER_PORT = 8080
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #client_socket.connect((SERVER_HOST, SERVER_PORT))
+    client_socket.connect((SERVER_HOST, SERVER_PORT))
+
+    servIndexUser_bytes = struct.pack('>I', servIndexUser)
+    client_socket.sendall(servIndexUser_bytes)
 
     send_thread = threading.Thread(target=send_image, args=(client_socket,))
     receive_thread = threading.Thread(target=receive_and_process_images, args=(client_socket,))

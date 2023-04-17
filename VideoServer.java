@@ -4,16 +4,21 @@ import java.util.concurrent.*;
 
 public class VideoServer {
     private static final int PORT = 8080;
-    private static final ConcurrentHashMap<Socket, DataOutputStream> clients = new ConcurrentHashMap<>();
+    private static final int MAX_GAMES = 5;
+    private static final int MAX_PLAYERS_PER_GAME = 2;
+
+    private static final ConcurrentHashMap<Integer, ConcurrentHashMap<Socket, DataOutputStream>> gameClients = new ConcurrentHashMap<>();
 
     public static void main(String[] args) throws IOException {
+        for (int i = 0; i < MAX_GAMES; i++) {
+            gameClients.put(i, new ConcurrentHashMap<>());
+        }
+
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Serveur en attente de connexions...");
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connecté: " + clientSocket.getRemoteSocketAddress());
-                DataOutputStream outputStream = new DataOutputStream(clientSocket.getOutputStream());
-                clients.put(clientSocket, outputStream);
                 new Thread(new ClientHandler(clientSocket)).start();
             }
         }
@@ -30,6 +35,17 @@ public class VideoServer {
         public void run() {
             try {
                 DataInputStream inputStream = new DataInputStream(clientSocket.getInputStream());
+                int servIndexUser = inputStream.readInt();
+                ConcurrentHashMap<Socket, DataOutputStream> clients = gameClients.get(servIndexUser);
+
+                if (clients.size() < MAX_PLAYERS_PER_GAME) {
+                    DataOutputStream outputStream = new DataOutputStream(clientSocket.getOutputStream());
+                    clients.put(clientSocket, outputStream);
+                    System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " ajouté à la partie " + servIndexUser);
+                } else {
+                    throw new IOException("Partie pleine");
+                }
+
                 while (true) {
                     int score = inputStream.readInt();
                     int length = inputStream.readInt();
@@ -53,7 +69,9 @@ public class VideoServer {
                 System.out.println("1");
                 e.printStackTrace();
             } finally {
-                clients.remove(clientSocket);
+                for (ConcurrentHashMap<Socket, DataOutputStream> clients : gameClients.values()) {
+                    clients.remove(clientSocket);
+                }
                 try {
                     clientSocket.close();
                 } catch (IOException e) {
