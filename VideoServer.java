@@ -7,11 +7,11 @@ public class VideoServer {
     private static final int MAX_GAMES = 5;
     private static final int MAX_PLAYERS_PER_GAME = 2;
 
-    private static final ConcurrentHashMap<Integer, ConcurrentHashMap<Socket, DataOutputStream>> gameClients = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Integer, Game> games = new ConcurrentHashMap<>();
 
     public static void main(String[] args) throws IOException {
         for (int i = 0; i < MAX_GAMES; i++) {
-            gameClients.put(i, new ConcurrentHashMap<>());
+            games.put(i, new Game());
         }
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -21,6 +21,19 @@ public class VideoServer {
                 System.out.println("Client connecté: " + clientSocket.getRemoteSocketAddress());
                 new Thread(new ClientHandler(clientSocket)).start();
             }
+        }
+    }
+
+    static class Game {
+        ConcurrentHashMap<Socket, DataOutputStream> clients = new ConcurrentHashMap<>();
+        int valToFind = -1;
+        ConcurrentHashMap<Socket, Integer> scores = new ConcurrentHashMap<>();
+
+        public void updateValToFind() {
+            this.valToFind = (int) (Math.random() * 10);
+            System.out.println("Nouvelle valeur à trouver: " + valToFind + "Dans la partie " + games.values().stream().filter(g -> g.clients.containsValue(clients.values().toArray()[0])).findFirst().get());
+            //Send to all clients the new value to find with a blank image and a score of 0
+            
         }
     }
 
@@ -36,12 +49,20 @@ public class VideoServer {
             try {
                 DataInputStream inputStream = new DataInputStream(clientSocket.getInputStream());
                 int servIndexUser = inputStream.readInt();
-                ConcurrentHashMap<Socket, DataOutputStream> clients = gameClients.get(servIndexUser);
+                Game game = games.get(servIndexUser);
 
-                if (clients.size() < MAX_PLAYERS_PER_GAME) {
+                if (game.clients.size() < MAX_PLAYERS_PER_GAME) {
                     DataOutputStream outputStream = new DataOutputStream(clientSocket.getOutputStream());
-                    clients.put(clientSocket, outputStream);
+                    game.clients.put(clientSocket, outputStream);
+                    game.scores.put(clientSocket, 0);
                     System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " ajouté à la partie " + servIndexUser);
+
+                    if (game.clients.size() == MAX_PLAYERS_PER_GAME) {
+                        game.updateValToFind();
+                        for (DataOutputStream out : game.clients.values()) {
+                            out.writeUTF("NEW_VAL_TO_FIND " + game.valToFind);
+                        }
+                    }
                 } else {
                     throw new IOException("Partie pleine");
                 }
@@ -52,10 +73,20 @@ public class VideoServer {
                     if (length > 0) {
                         byte[] image = new byte[length];
                         inputStream.readFully(image, 0, length);
-                        clients.entrySet().stream()
+
+                        if (game.scores.get(clientSocket) != score) {
+                            game.scores.put(clientSocket, score);
+                            game.updateValToFind();
+                            for (DataOutputStream out : game.clients.values()) {
+                                out.writeUTF("NEW_VAL_TO_FIND " + game.valToFind);
+                            }
+                        }
+
+                        game.clients.entrySet().stream()
                                 .filter(entry -> entry.getKey() != clientSocket)
                                 .forEach(entry -> {
                                     try {
+                                        entry.getValue().writeInt(game.valToFind);
                                         entry.getValue().writeInt(score);
                                         entry.getValue().writeInt(length);
                                         entry.getValue().write(image);
@@ -66,19 +97,22 @@ public class VideoServer {
                     }
                 }
             } catch (IOException e) {
-                System.out.println("1");
                 e.printStackTrace();
             } finally {
-                for (ConcurrentHashMap<Socket, DataOutputStream> clients : gameClients.values()) {
-                    clients.remove(clientSocket);
-                }
-                try {
-                    clientSocket.close();
-                } catch (IOException e) {
-                    System.out.println("2");
-                    e.printStackTrace();
-                }
-            }
+                Game game = games.values().stream().filter(g -> g.clients.containsKey(clientSocket)).findFirst().orElse(null);
+
+        if (game != null) {
+            game.clients.remove(clientSocket);
+            game.scores.remove(clientSocket);
+        }
+
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
+    }
+}
+

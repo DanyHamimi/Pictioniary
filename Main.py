@@ -44,7 +44,7 @@ def send_image(client_socket):
             client_socket.sendall(size_bytes)
             client_socket.sendall(image_data)
 
-            print(f'Image sent with size {size/1024} ko')
+            #print(f'Image sent with size {size/1024} ko')
         except Exception as e:
             print(e)
         time.sleep(0.01)
@@ -54,6 +54,10 @@ def send_image(client_socket):
 def receive_and_process_images(client_socket):
     while True:
         try :
+            valTofind_data = client_socket.recv(4)
+            if not valTofind_data: break
+            valTovind = struct.unpack('>I', valTofind_data)[0]
+            print("valTofind_data",valTovind)
             score_data = client_socket.recv(4)
             if not score_data: break
             score = struct.unpack('>I', score_data)[0]
@@ -63,7 +67,7 @@ def receive_and_process_images(client_socket):
             img_data = b''
             while len(img_data) < length:
                 img_data += client_socket.recv(min(length - len(img_data), 4096))
-            print(f'Image received with size {length/1024} bytes and score {score}.')
+            #print(f'Image received with size {length/1024} bytes and score {score}.')
             img = Image.open(io.BytesIO(img_data))
             canvasRecived = img.copy().convert('RGBA')
             canvasRecived = canvasRecived.resize((350, 350))
@@ -91,7 +95,7 @@ def main(valToFind, servIndex):
     score = 0
     isTesting = False
     print("main:",valToFind)
-    SERVER_HOST = 'rayanekaabeche.fr'
+    SERVER_HOST = 'localhost'
     SERVER_PORT = 8080
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((SERVER_HOST, SERVER_PORT))
