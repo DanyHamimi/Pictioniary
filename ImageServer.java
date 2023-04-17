@@ -3,7 +3,7 @@ import java.net.*;
 import java.util.concurrent.*;
 
 public class ImageServer {
-    private static final int PORT = 8080;
+    private static final int PORT = 8081;
     private static final ConcurrentHashMap<Socket, DataOutputStream> clients = new ConcurrentHashMap<>();
 
     public static void main(String[] args) throws IOException {
@@ -50,7 +50,8 @@ public class ImageServer {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("/!\\ Client " + clientSocket.getRemoteSocketAddress() + " déconnecté");
+                //e.printStackTrace();
             } finally {
                 clients.remove(clientSocket);
                 try {

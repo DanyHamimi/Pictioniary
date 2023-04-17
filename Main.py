@@ -90,7 +90,7 @@ def main(valToFind):
     isTesting = False
     print("main:",valToFind)
     SERVER_HOST = 'localhost'
-    SERVER_PORT = 8080
+    SERVER_PORT = 8081
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((SERVER_HOST, SERVER_PORT))
 
