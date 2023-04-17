@@ -91,7 +91,7 @@ def main(valToFind, servIndex):
     score = 0
     isTesting = False
     print("main:",valToFind)
-    SERVER_HOST = 'localhost'
+    SERVER_HOST = 'rayanekaabeche.fr'
     SERVER_PORT = 8080
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((SERVER_HOST, SERVER_PORT))
