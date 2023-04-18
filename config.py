@@ -49,9 +49,12 @@ window.blit(background, (0, 0))
 font = pygame.font.Font('freesansbold.ttf', 32)
 but2FindBis = pygame.image.load("Imgs/testbuttondany.png")
 butFindedBis = pygame.image.load("Imgs/testbuttondany.png")
+butTimerBis = pygame.image.load("Imgs/testbuttondany.png")
 
 buttonVal2Find = pygame.transform.scale(but2FindBis, (500, 70))
 buttonValFinded = pygame.transform.scale(butFindedBis, (500, 70))
+butTimer = pygame.transform.scale(butTimerBis, (200, 80))
+
 
     #Add buttons to the window
 
@@ -63,6 +66,7 @@ def init():
     window.blit(background, (0, 0))
     window.blit(buttonVal2Find, (750, 50))
     window.blit(buttonValFinded, (750, 150))
+    window.blit(butTimer, (1280 - 200, 720 - 100))
 
     textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
     window.blit(textNb, (825, 65))

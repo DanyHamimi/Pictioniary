@@ -3,6 +3,8 @@ import math
 from Main import main
 from config import *
 from utils import *
+from solo import mainSolo
+
 
 pygame.init()
 
@@ -25,9 +27,11 @@ logo = pygame.image.load("Imgs/testlogo.png")
 
 buttonBis = pygame.image.load("Imgs/testbutton.png")
 buttonQuitBis = pygame.image.load("Imgs/button2.png")
+#buttonSoloBis = pygame.image.load("Imgs/button.png")
 
 button = pygame.transform.scale(buttonBis, (200, 80))
 buttonQuit = pygame.transform.scale(buttonQuitBis, (200, 80))
+buttonSolo = pygame.transform.scale(buttonBis, (200, 80))
 
 # Définir les dimensions et la position du logo
 logo_width = 1036
@@ -44,14 +48,22 @@ text = font.render("Play", True, (255, 255, 255))
 button_width = 200
 button_height = 80
 button_x = (SCREEN_WIDTH - button_width) // 2
-button_y = logo_y + logo_height + 150
+button_y = logo_y + logo_height + 100
+
+#Créer le bouton solo
+textSolo = font.render("Solo", True, (255, 255, 255))
+
+buttonSolo_width = 200
+buttonSolo_height = 80
+buttonSolo_x = (SCREEN_WIDTH - buttonSolo_width) // 2
+buttonSolo_y = logo_y + logo_height + 200
 
 # Créer le bouton quit
 
 buttonQuit_width = 200
 buttonQuit_height = 80
 buttonQuit_x = (SCREEN_WIDTH - buttonQuit_width) // 2
-buttonQuit_y = logo_y + logo_height + 250
+buttonQuit_y = logo_y + logo_height + 300
 
 # Popup pour demander le pseudo
 
@@ -121,6 +133,12 @@ while True:
                 print("Le bouton Quit a été cliqué !")
                 pygame.quit()
                 quit()
+            elif buttonSolo_x <= mouse_pos[0] <= buttonSolo_x + buttonSolo_width and buttonSolo_y <= mouse_pos[1] <= buttonSolo_y + buttonSolo_height:
+                print("Le bouton Solo a été cliqué !")
+                window.fill((0, 0, 0))
+                pygame.display.update()
+                mainSolo(init(),1)
+
 
     time = pygame.time.get_ticks() / 1000.0
     logo_y_offset = math.sin(time * 3) * 20
@@ -133,6 +151,9 @@ while True:
 
     # Afficher l'image du bouton
     window.blit(button, (button_x, button_y))
+
+    # Afficher l'image du bouton
+    window.blit(buttonSolo, (buttonSolo_x, buttonSolo_y))
 
     # Afficher l'image du bouton
     window.blit(buttonQuit, (buttonQuit_x, buttonQuit_y))
