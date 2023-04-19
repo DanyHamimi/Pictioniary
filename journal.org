@@ -77,6 +77,22 @@ Pagani:
     
 à se voir le 12 avril 
 
+<19 avril 2023>
+Pagani
+
+FAIT:
+- cinq parties sur même serveur au plus deux jouers
+- bug de fluidité : resolu (juste reduit waiting signal)
+
+PAS FAIT:
+- pas arrivé à entreiner sur les alphanumeriques (je crois pb decodage des prediction)
+- pas fait plusieurs jouers sur une même partie
+- pas encore documentation (assurez vous bien que le code est bien factorisé)
+
+À FAIRE (pour la fin du projet):
+- permettre partie plusieurs jouers
+- LOC 80+70+50+300+160+40+180+30+130
+- preciser exactitude du modele
 
 
     
