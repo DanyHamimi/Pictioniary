@@ -4,7 +4,6 @@ import numpy as np
 import tensorflow as tf
 import pygame
 from PIL import Image
-from AITrain.numRec import *
 import socket
 import struct
 import time
