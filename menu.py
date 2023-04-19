@@ -27,11 +27,11 @@ logo = pygame.image.load("Imgs/testlogo.png")
 
 buttonBis = pygame.image.load("Imgs/testbutton.png")
 buttonQuitBis = pygame.image.load("Imgs/button2.png")
-#buttonSoloBis = pygame.image.load("Imgs/button.png")
+buttonSoloBis = pygame.image.load("Imgs/boutton_solo.png")
 
 button = pygame.transform.scale(buttonBis, (200, 80))
 buttonQuit = pygame.transform.scale(buttonQuitBis, (200, 80))
-buttonSolo = pygame.transform.scale(buttonBis, (200, 80))
+buttonSolo = pygame.transform.scale(buttonSoloBis, (200, 80))
 
 # Définir les dimensions et la position du logo
 logo_width = 1036

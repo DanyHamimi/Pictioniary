@@ -17,6 +17,15 @@ from utils import drawLine, imagePrediction
 tmpcordX = -1
 tmpcordY = -1
 
+def win(score):
+    window.fill((255, 255, 255))
+    font = pygame.font.SysFont('Arial', 100)
+    text = font.render("Score Final : " + str(score), True, (0, 0, 0))
+    text_rect = text.get_rect(center=(1280 // 2, 720 // 2))
+    window.blit(text, text_rect)
+    pygame.display.update()
+    pygame.time.wait(3000)
+
 
 
 def mainSolo(valToFind, servIndex):
@@ -139,6 +148,8 @@ def mainSolo(valToFind, servIndex):
 
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
+
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -153,7 +164,7 @@ def mainSolo(valToFind, servIndex):
         window.blit(butTimer, (1280 - 200, 720 - 100))
         window.blit(timer_surface, (1280 - 150, 720 - 75))
         if remaining_time <= 0:
-            # Le temps est écoulé, arrêter le jeu ou faire quelque chose d'autre
+            win(score)
             break
         clock.tick(60)
 
