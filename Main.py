@@ -85,6 +85,7 @@ def receive_and_process_images(client_socket):
                 if(score==5):
                     loose()
                     inGame = False
+                    break
                 data = client_socket.recv(4)
                 if not data: continue
                 length = struct.unpack('>I', data)[0]
