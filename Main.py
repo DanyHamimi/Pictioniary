@@ -74,7 +74,7 @@ def receive_and_process_images(client_socket):
     while True:
         try :
             int_data = client_socket.recv(4)
-            if not int_data: break
+            if not int_data or len(int_data) < 4: break
             int_val = struct.unpack('>I', int_data)[0]
             print("On a recu" , int_val)
             if(int_val != 4294965296):
