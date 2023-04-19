@@ -19,6 +19,8 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+
+
 # Charger l'image de fond
 background = pygame.image.load("Imgs/testfond.png")
 

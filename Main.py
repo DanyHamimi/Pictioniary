@@ -15,7 +15,7 @@ from utils import drawLine, imagePrediction
 
 tmpcordX = -1
 tmpcordY = -1
-
+inGame = True
 def recvall(sock, n):
     data = bytearray()
     while len(data) < n:
@@ -71,6 +71,7 @@ def loose():
     
 def receive_and_process_images(client_socket):
     global ValToFindReally
+    global inGame
     while True:
         try :
             int_data = client_socket.recv(4)
@@ -83,6 +84,7 @@ def receive_and_process_images(client_socket):
                 score = struct.unpack('>I', score_data)[0]
                 if(score==5):
                     loose()
+                    inGame = False
                     break
                 data = client_socket.recv(4)
                 if not data: continue
@@ -126,6 +128,8 @@ def main(valToFind, servIndex):
     global byteFrame
     global username
     global servIndexUser
+    global inGame
+    inGame = True
     servIndexUser = servIndex
     username = ""
     global score
@@ -145,6 +149,9 @@ def main(valToFind, servIndex):
     receive_thread.start()
 
     while True:
+
+        if not inGame:
+            break
 
         pygame.display.update()
 
@@ -268,6 +275,7 @@ def main(valToFind, servIndex):
         window.blit(frameCanvas, (0, 0))
         if score == 5:
             win()
+            inGame = False
             break
         text = font.render("Score : " + str(score), True, (255, 255, 255))
         window.blit(text, (500, 0))
