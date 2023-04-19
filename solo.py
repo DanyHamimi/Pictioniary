@@ -17,10 +17,13 @@ from utils import drawLine, imagePrediction
 tmpcordX = -1
 tmpcordY = -1
 
+background = pygame.image.load("Imgs/testfond.png")
+
 def win(score):
     window.fill((255, 255, 255))
+    window.blit(background, (0, 0))
     font = pygame.font.SysFont('Arial', 100)
-    text = font.render("Score Final : " + str(score), True, (0, 0, 0))
+    text = font.render("Score Final : " + str(score), True, (255, 255, 255))
     text_rect = text.get_rect(center=(1280 // 2, 720 // 2))
     window.blit(text, text_rect)
     pygame.display.update()
@@ -155,7 +158,7 @@ def mainSolo(valToFind, servIndex):
                 pygame.quit()
                 quit()
         elapsed_time = time.time() - start_time
-        remaining_time = max(0, 90 - elapsed_time)
+        remaining_time = max(0, 45 - elapsed_time)
         minutes = int(remaining_time / 60)
         seconds = int(remaining_time % 60)
         timer_text = f"{minutes:02d}:{seconds:02d}"
