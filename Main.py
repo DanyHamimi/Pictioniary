@@ -25,30 +25,6 @@ def recvall(sock, n):
         data.extend(packet)
     return data
 
-def send_image(client_socket):
-    while True:
-        try:
-            canvas_img = Image.fromarray(canvasToSave)
-            canvas_img = canvas_img.crop((200, 50, 550, 400))
-            canvas_img = canvas_img.resize((350, 350))
-            img_byte_arr = io.BytesIO()
-            canvas_img.save(img_byte_arr, format='JPEG')
-            image_data = img_byte_arr.getvalue()
-
-
-            size = len(image_data)
-            score_bytes = struct.pack('>I', score)
-            size_bytes = size.to_bytes(4, byteorder='big')
-            client_socket.sendall(score_bytes)
-            client_socket.sendall(size_bytes)
-            client_socket.sendall(image_data)
-
-            #print(f'Image sent with size {size/1024} ko')
-        except Exception as e:
-            print(e)
-        time.sleep(0.01)
-
-
 def win():
     window.fill((255, 255, 255))
     window.blit(background, (0, 0))
@@ -68,6 +44,35 @@ def loose():
     window.blit(text, text_rect)
     pygame.display.update()
     pygame.time.wait(3000)
+
+def send_image(client_socket):
+    global inGame
+    while True:
+        try:
+            if score == 5:
+                win()
+                inGame = False
+                break
+            
+            canvas_img = Image.fromarray(canvasToSave)
+            canvas_img = canvas_img.crop((200, 50, 550, 400))
+            canvas_img = canvas_img.resize((350, 350))
+            img_byte_arr = io.BytesIO()
+            canvas_img.save(img_byte_arr, format='JPEG')
+            image_data = img_byte_arr.getvalue()
+
+
+            size = len(image_data)
+            score_bytes = struct.pack('>I', score)
+            size_bytes = size.to_bytes(4, byteorder='big')
+            client_socket.sendall(score_bytes)
+            client_socket.sendall(size_bytes)
+            client_socket.sendall(image_data)
+
+            #print(f'Image sent with size {size/1024} ko')
+        except Exception as e:
+            print(e)
+        time.sleep(0.01)
     
 def receive_and_process_images(client_socket):
     global ValToFindReally
