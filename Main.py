@@ -233,6 +233,7 @@ def main(valToFind, servIndex):
                             if ValToFindReally == valFinded:
                                 
                                 score += 1
+                                valFinded = -2
                                 #window.blit(buttonVal2Find, (750, 50))
                                 #textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
                                 #window.blit(textNb, (825, 65))
