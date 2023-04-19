@@ -106,9 +106,14 @@ def receive_and_process_images(client_socket):
                 newValue = struct.unpack('>I', int_newValue)[0]
                 print("newValue",newValue)
                 window.blit(buttonVal2Find, (750, 50))
-                textNb = font.render("Chiffre à trouver : " + str(newValue), True, (255, 255, 255))
+                if(newValue == 14):
+                    textNb = font.render("En Attende d'un 2eme joueur", True, (255, 255, 255))
+                    ValToFindReally = -1
+                else :
+                    textNb = font.render("Chiffre à trouver : " + str(newValue), True, (255, 255, 255))
+                    ValToFindReally = newValue
+    
                 window.blit(textNb, (825, 65))
-                ValToFindReally = newValue
                 valFinded = -2
 
 
