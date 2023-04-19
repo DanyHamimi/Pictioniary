@@ -77,7 +77,7 @@ def receive_and_process_images(client_socket):
             int_data = client_socket.recv(4)
             if not int_data or len(int_data) < 4: break
             int_val = struct.unpack('>I', int_data)[0]
-            print("On a recu" , int_val)
+            #print("On a recu" , int_val)
             if(int_val != 4294965296):
                 score_data = client_socket.recv(4)
                 if not score_data: continue
@@ -156,6 +156,7 @@ def main(valToFind, servIndex):
     while True:
 
         if not inGame:
+            print("here here here")
             break
 
         pygame.display.update()
