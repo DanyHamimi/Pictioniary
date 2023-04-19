@@ -25,35 +25,9 @@ def recvall(sock, n):
         data.extend(packet)
     return data
 
-def win():
-    window.fill((255, 255, 255))
-    window.blit(background, (0, 0))
-    font = pygame.font.SysFont('Arial', 100)
-    text = font.render("Tu as gagné", True, (255, 255, 255))
-    text_rect = text.get_rect(center=(1280 // 2, 720 // 2))
-    window.blit(text, text_rect)
-    pygame.display.update()
-    pygame.time.wait(3000)
-
-def loose():
-    window.fill((255, 255, 255))
-    window.blit(background, (0, 0))
-    font = pygame.font.SysFont('Arial', 100)
-    text = font.render("Tu as perdu", True, (255, 255, 255))
-    text_rect = text.get_rect(center=(1280 // 2, 720 // 2))
-    window.blit(text, text_rect)
-    pygame.display.update()
-    pygame.time.wait(3000)
-
 def send_image(client_socket):
-    global inGame
     while True:
         try:
-            if score == 5:
-                win()
-                inGame = False
-                break
-            
             canvas_img = Image.fromarray(canvasToSave)
             canvas_img = canvas_img.crop((200, 50, 550, 400))
             canvas_img = canvas_img.resize((350, 350))
@@ -73,6 +47,27 @@ def send_image(client_socket):
         except Exception as e:
             print(e)
         time.sleep(0.01)
+
+
+def win():
+    window.fill((255, 255, 255))
+    window.blit(background, (0, 0))
+    font = pygame.font.SysFont('Arial', 100)
+    text = font.render("Tu as gagné", True, (255, 255, 255))
+    text_rect = text.get_rect(center=(1280 // 2, 720 // 2))
+    window.blit(text, text_rect)
+    pygame.display.update()
+    pygame.time.wait(3000)
+
+def loose():
+    window.fill((255, 255, 255))
+    window.blit(background, (0, 0))
+    font = pygame.font.SysFont('Arial', 100)
+    text = font.render("Tu as perdu", True, (255, 255, 255))
+    text_rect = text.get_rect(center=(1280 // 2, 720 // 2))
+    window.blit(text, text_rect)
+    pygame.display.update()
+    pygame.time.wait(3000)
     
 def receive_and_process_images(client_socket):
     global ValToFindReally
