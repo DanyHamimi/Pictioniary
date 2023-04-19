@@ -60,10 +60,10 @@ def receive_and_process_images(client_socket):
             print("On a recu" , int_val)
             if(int_val != 4294965296):
                 score_data = client_socket.recv(4)
-                if not score_data: break
+                if not score_data: continue
                 score = struct.unpack('>I', score_data)[0]
                 data = client_socket.recv(4)
-                if not data: break
+                if not data: continue
                 length = struct.unpack('>I', data)[0]
                 img_data = b''
                 while len(img_data) < length:
@@ -78,7 +78,7 @@ def receive_and_process_images(client_socket):
             else : 
                 print('on rentre ici')
                 int_newValue = client_socket.recv(4)
-                if not int_newValue: break
+                if not int_newValue: continue
                 newValue = struct.unpack('>I', int_newValue)[0]
                 print("newValue",newValue)
                 window.blit(buttonVal2Find, (750, 50))
