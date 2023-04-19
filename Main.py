@@ -49,6 +49,25 @@ def send_image(client_socket):
         time.sleep(0.01)
 
 
+def win():
+    window.fill((255, 255, 255))
+    window.blit(background, (0, 0))
+    font = pygame.font.SysFont('Arial', 100)
+    text = font.render("Tu as gagné", True, (255, 255, 255))
+    text_rect = text.get_rect(center=(1280 // 2, 720 // 2))
+    window.blit(text, text_rect)
+    pygame.display.update()
+    pygame.time.wait(3000)
+
+def loose():
+    window.fill((255, 255, 255))
+    window.blit(background, (0, 0))
+    font = pygame.font.SysFont('Arial', 100)
+    text = font.render("Tu as perdu", True, (255, 255, 255))
+    text_rect = text.get_rect(center=(1280 // 2, 720 // 2))
+    window.blit(text, text_rect)
+    pygame.display.update()
+    pygame.time.wait(3000)
     
 def receive_and_process_images(client_socket):
     global ValToFindReally
@@ -62,6 +81,9 @@ def receive_and_process_images(client_socket):
                 score_data = client_socket.recv(4)
                 if not score_data: continue
                 score = struct.unpack('>I', score_data)[0]
+                if(score==5):
+                    loose()
+                    break
                 data = client_socket.recv(4)
                 if not data: continue
                 length = struct.unpack('>I', data)[0]
@@ -244,7 +266,9 @@ def main(valToFind, servIndex):
 
         frameCanvas = pygame.transform.flip(frameCanvas, False, True)
         window.blit(frameCanvas, (0, 0))
-
+        if score == 5:
+            win()
+            break
         text = font.render("Score : " + str(score), True, (255, 255, 255))
         window.blit(text, (500, 0))
 
