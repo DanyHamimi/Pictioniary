@@ -52,6 +52,7 @@ def send_image(client_socket):
 
     
 def receive_and_process_images(client_socket):
+    global ValToFindReally
     while True:
         try :
             int_data = client_socket.recv(4)
@@ -84,7 +85,7 @@ def receive_and_process_images(client_socket):
                 window.blit(buttonVal2Find, (750, 50))
                 textNb = font.render("Chiffre à trouver : " + str(newValue), True, (255, 255, 255))
                 window.blit(textNb, (825, 65))
-                valToFind = newValue
+                ValToFindReally = newValue
                 valFinded = -2
 
 
@@ -99,7 +100,6 @@ def receive_and_process_images(client_socket):
 
 
 def main(valToFind, servIndex):
-    
     global valFinded
     global imageFrame
     global byteFrame
@@ -110,7 +110,6 @@ def main(valToFind, servIndex):
     global score
     score = 0
     isTesting = False
-    print("main:",valToFind)
     SERVER_HOST = 'rayanekaabeche.fr'
     SERVER_PORT = 8080
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -125,7 +124,7 @@ def main(valToFind, servIndex):
     receive_thread.start()
 
     while True:
-        print(valToFind)
+
         pygame.display.update()
 
         success, img = cap.read()
@@ -195,10 +194,11 @@ def main(valToFind, servIndex):
                             print(valFinded)
                             window.blit(buttonValFinded, (750, 150))
                             textVal = font.render("Chiffre trouvé : " + str(valFinded), True, (255, 255, 255))
+                            print("Chiffre à trouver : " + str(ValToFindReally))
                             window.blit(textVal, (825, 165))
-                            if valToFind == valFinded:
+                            if ValToFindReally == valFinded:
+                                
                                 score += 1
-                                valToFind = np.random.randint(0, 9)
                                 #window.blit(buttonVal2Find, (750, 50))
                                 #textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
                                 #window.blit(textNb, (825, 65))
