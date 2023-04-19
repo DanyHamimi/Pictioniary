@@ -157,6 +157,8 @@ def main(valToFind, servIndex):
 
         if not inGame:
             print("here here here")
+            window.fill((0, 0, 0))
+            pygame.display.update()
             break
 
         pygame.display.update()
@@ -283,7 +285,6 @@ def main(valToFind, servIndex):
         if score == 5:
             win()
             inGame = False
-            break
         text = font.render("Score : " + str(score), True, (255, 255, 255))
         window.blit(text, (500, 0))
 
