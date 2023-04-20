@@ -11,7 +11,7 @@ import threading
 import io
 
 from config import *
-from utils import drawLine, imagePrediction
+from utils import drawLine, predict_letter, preprocess_image
 
 tmpcordX = -1
 tmpcordY = -1
@@ -48,7 +48,7 @@ def mainSolo(valToFind, servIndex):
     clock = pygame.time.Clock()
 
     while True:
-        print(valToFind)
+        #print(valToFind)
         pygame.display.update()
 
         success, img = cap.read()
@@ -114,10 +114,11 @@ def mainSolo(valToFind, servIndex):
                         isTesting = True
                         print("photo")
                         try:
-                            valFinded = imagePrediction()
-                            print(valFinded)
+                            #valFinded = imagePrediction()
+                            valFinded = predict_letter(preprocess_image("Imgs/canvas.jpg"), modelBis)
+                            #print(valFinded)
                             window.blit(buttonValFinded, (750, 150))
-                            textVal = font.render("Chiffre trouvé : " + str(valFinded), True, (255, 255, 255))
+                            textVal = font.render("Lettre trouvé : " + valFinded, True, (255, 255, 255))
                             window.blit(textVal, (825, 165))
                             if valToFind == valFinded:
                                 score += 1
