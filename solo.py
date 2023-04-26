@@ -1,77 +1,123 @@
-import cv2
-import mediapipe as mp
-import numpy as np
-import tensorflow as tf
-import pygame
-from PIL import Image
-import socket
-import struct
-import time
-import threading
-import io
+import random
+import string
+from realmain import *
+actualScore = 0
+fontMOT = pygame.font.Font('freesansbold.ttf', 60)
+def setGameType(gameType):
+    if(gameType == "Pictionary"):
+        return modelDraw
+    elif(gameType == "Mots"):
+        return modelLetters
+    elif(gameType == "Mathématiques"):
+        return model
 
-from config import *
-from utils import drawLine, predict_letter, preprocess_image
+def predictImage(typeGame):
+    if(typeGame == "Pictionary"):
+         print("dessin")
+        #return predict_draw(preprocess_image("Imgs/canvas.jpg"), modelDraw)
+    elif(typeGame == "Mots"):
+        valFinded = predict_letter(preprocess_image("Imgs/canvas.jpg"), modelLetters)
+        print(valFinded)
+    elif(typeGame == "Mathématiques"):
+        valFinded = imagePrediction()
+        print(valFinded)
+    window.blit(buttonValFinded, (750, 150))
+    textVal = font.render(str(valFinded), True, (255, 255, 255))
+    window.blit(textVal, (825, 165))
+    return valFinded
 
-tmpcordX = -1
-tmpcordY = -1
+def generateOtherValToFind(typeGame):
+    if(typeGame == "Pictionary"):
+        print("dessin")
+        return 0
+    elif (typeGame == "Mots"):
+        #Generate random letter
+        with open("Mots.txt", "r") as file:
+            words = file.readlines()
+        word_to_find = random.choice(words).strip()
+        print("Mot à trouver : " + word_to_find)
+        return word_to_find
+    elif (typeGame == "Mathématiques"):
+        return np.random.randint(0, 9)
 
-background = pygame.image.load("Imgs/testfond.png")
+        #return predict_draw(preprocess_image("Imgs/canvas.jpg"), modelDraw)
 
-def win(score):
-    window.fill((255, 255, 255))
-    window.blit(background, (0, 0))
-    font = pygame.font.SysFont('Arial', 100)
-    text = font.render("Score Final : " + str(score), True, (255, 255, 255))
-    text_rect = text.get_rect(center=(1280 // 2, 720 // 2))
-    window.blit(text, text_rect)
-    pygame.display.update()
-    pygame.time.wait(3000)
+def display_current_word(word, letters_found):
+    displayed_word = ""
+    for letter in word:
+        if letter in letters_found:
+            displayed_word += letter
+        else:
+            displayed_word += " "
+    return displayed_word
+        
 
-
-
-def mainSolo(valToFind, servIndex):
-    global valFinded
-    global imageFrame
-    global byteFrame
-    global username
-    global servIndexUser
-    servIndexUser = servIndex
+def mainSolo(isonline,gameType):
+    valToFind = generateOtherValToFind(gameType)
+    letters_found = set()
+    current_letter_index = 0
+    
+    init()
+    setNewValue(gameType,valToFind)
+    score = 0   
+    currentModel = setGameType(gameType)
+    gomme = True
+    tmpcordX = -1
+    tmpcordY = -1
+    #servIndexUser = servIndex
     username = ""
-    global score
-    score = 0
-    isTesting = False
-    print("main:", valToFind)
-    SERVER_HOST = 'rayanekaabeche.fr'
-    SERVER_PORT = 8080
-    start_time = time.time()
-    clock = pygame.time.Clock()
+
+    print("Valeur a trouver : " + str(valToFind))
+    if(isonline == "Solo"):
+        start_time = time.time()
+        clock = pygame.time.Clock()
 
     while True:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
-                        isTesting = True
                         print("photo")
                         try:
-                            #valFinded = imagePrediction()
-                            valFinded = str(predict_letter(preprocess_image("Imgs/canvas.jpg"), modelBis))
-                            #print(valFinded)
-                            window.blit(buttonValFinded, (750, 150))
-                            textVal = font.render("Lettre trouvée : " + valFinded, True, (255, 255, 255))
-                            window.blit(textVal, (825, 165))
+                            valFinded = predictImage(gameType)
+                            print("Valeur à trouver " + str(valToFind) + "Valeur trouvée " + str(valFinded))
+                            if gameType == "Mots":
+                                if valToFind[current_letter_index] == valFinded:
+                                    print("Lettre trouvée dans l'ordre !")
+                                    letters_found.add(valFinded)
+                                    current_letter_index += 1
+                                    if current_letter_index == len(valToFind):
+                                        print("Toutes les lettres du mot ont été trouvées dans l'ordre !")
+                                        current_letter_index = 0
+                                        letters_found.clear()
+                                        score += 1
+                                        init()
+                                        valToFind = generateOtherValToFind(gameType)
+                                        setNewValue(gameType,valToFind)
                             if valToFind == valFinded:
+                                print("trouvé")
                                 score += 1
-                                valToFind = np.random.randint(0, 9)
-                                window.blit(buttonVal2Find, (750, 50))
-                                textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
-                                window.blit(textNb, (825, 65))
-                                # valFinded = -2
+                                valToFind = generateOtherValToFind(gameType)
+                                setNewValue(gameType,valToFind)
+                                canvasToSave[:] = 255, 255, 255
+                                canvas[:] = 0, 0, 0
+                                
                         except Exception as e:
                             print("error")
                             print(e)
+        displayed_word = display_current_word(valToFind, letters_found)
+        word_surface = fontMOT.render(displayed_word, True, (255, 255, 255))
+        for i, letter in enumerate(displayed_word):
+            if letter in letters_found:
+                green_letter = fontMOT.render(letter, True, (0, 255, 0))
+                word_surface.blit(green_letter, (i * fontMOT.size(letter)[0], 0))
+        window.blit(word_surface, (800, 300))
+
+        pygame.display.update()
         if keys[pygame.K_w]:
             canvasToSave[:] = 255, 255, 255
             canvas[:] = 0, 0, 0
+
+        if keys[pygame.K_x]:
+             gomme = not gomme
         
         #print(valToFind)
         pygame.display.update()
@@ -100,7 +146,7 @@ def mainSolo(valToFind, servIndex):
                         if tmpx8 != 0 and tmpy8 != 0:
                             tmpx8 = 640 - tmpx8
 
-                            drawLine(tmpx8, tmpy8, tmpcordX, tmpcordY)
+                            drawLine(tmpx8, tmpy8, tmpcordX, tmpcordY, gomme)
                             tmpcordX = tmpx8
                             tmpcordY = tmpy8
 
@@ -124,7 +170,7 @@ def mainSolo(valToFind, servIndex):
                 pygame.quit()
                 quit()
         elapsed_time = time.time() - start_time
-        remaining_time = max(0, 45 - elapsed_time)
+        remaining_time = max(0, 50 - elapsed_time)
         minutes = int(remaining_time / 60)
         seconds = int(remaining_time % 60)
         timer_text = f"{minutes:02d}:{seconds:02d}"
@@ -133,7 +179,7 @@ def mainSolo(valToFind, servIndex):
         window.blit(butTimer, (1280 - 200, 720 - 100))
         window.blit(timer_surface, (1280 - 150, 720 - 75))
         if remaining_time <= 0:
-            win(score)
+            win(str(score))
             break
         clock.tick(60)
 

@@ -9,6 +9,7 @@ has2Hands = False
 
 
 valFinded = -2
+valToFind = -1
 # Create an AITrain object
 mnist = tf.keras.datasets.mnist
 (x_train, y_train), (x_test, y_test) = (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -17,7 +18,8 @@ x_train = tf.keras.utils.normalize(x_train, axis=1)
 x_test = tf.keras.utils.normalize(x_test, axis=1)
 model = tf.keras.models.load_model('number.model')
 #modelBis = tf.keras.models.load_model('mnist.h5')
-modelBis = tf.keras.models.load_model('emnist_letters.h5')
+modelLetters = tf.keras.models.load_model('emnist_lettersbis.h5')
+modelDraw = tf.keras.models.load_model('QuickDraw.h5')
 
 cap = cv2.VideoCapture(0)
 
@@ -48,6 +50,7 @@ window = pygame.display.get_surface()
 background = pygame.image.load("Imgs/testfond.png")
 window.blit(background, (0, 0))
 font = pygame.font.Font('freesansbold.ttf', 32)
+fontsmaller = pygame.font.Font('freesansbold.ttf', 25)
 but2FindBis = pygame.image.load("Imgs/testbuttondany.png")
 butFindedBis = pygame.image.load("Imgs/testbuttondany.png")
 butTimerBis = pygame.image.load("Imgs/testbuttondany.png")
@@ -59,27 +62,34 @@ butTimer = pygame.transform.scale(butTimerBis, (200, 80))
 
     #Add buttons to the window
 
-
 def init():
-
-    valToFind = np.random.randint(0, 9)
-    print(valToFind)
     window.blit(background, (0, 0))
-    window.blit(buttonVal2Find, (750, 50))
-    window.blit(buttonValFinded, (750, 150))
-    window.blit(butTimer, (1280 - 200, 720 - 100))
-
-    textNb = font.render("Chiffre à trouver : " + str(valToFind), True, (255, 255, 255))
-    window.blit(textNb, (825, 65))
-
-    textVal = font.render("Chiffre trouvé : " + str(0), True, (255, 255, 255))
-    window.blit(textVal, (825, 165))
-
     draw = pygame.image.load("Imgs/guess.png")
     window.blit(draw, (0, 480))
-
     canvasRecived = np.zeros((350, 350, 3), np.uint8)
     canvasRecived[:] = 255, 255, 255
+    window.blit(butTimer, (1280 - 200, 720 - 100))
 
-    return valToFind
+
+def setNewValue(gameType,valToFind):
+    textVars = ""
+    if(gameType == "Pictionary"):
+        textVar = "Dessin à faire : "
+        textVars2 = "Dessin trouvé : "
+    elif(gameType == "Mots"):
+        textVars = "Mot à écrire : "
+        textVars2 = "Derniere lettre écrite : "
+    elif(gameType == "Mathématiques"):
+        textVars = "Calcul à faire : "
+        textVars2 = "Résultat trouvé : "
+    window.blit(buttonVal2Find, (750, 50))
+    window.blit(buttonValFinded, (750, 150))
+
+    textNb = fontsmaller.render(textVars + str(valToFind), True, (255, 255, 255))
+    window.blit(textNb, (825, 65))
+
+    textVal = fontsmaller.render(textVars2 + str(0), True, (255, 255, 255))
+    window.blit(textVal, (825, 165))
+
+
 

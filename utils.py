@@ -7,13 +7,16 @@ from PIL import ImageOps
 
 from config import *
 
-def drawLine(a, b, tmpcordX, tmpcordY):
+def drawLine(a, b, tmpcordX, tmpcordY, gomme):
     if tmpcordX == -1 and tmpcordY == -1:
         tmpcordX = a
         tmpcordY = b
-
-    cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 25)
-    cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 25)
+    if(gomme):
+        cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (255, 255, 255), 25)
+        cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 25)
+    else:
+        cv2.line(canvas, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 25)
+        cv2.line(canvasToSave, (tmpcordX, tmpcordY), (a, b), (0, 0, 0), 25)
     # cv2.imshow("Canvas", canvas)
     tmpcordX = a
     tmpcordY = b
@@ -33,7 +36,7 @@ def imagePrediction():
     dim = (width, height)
     imgBis = cv2.resize(imgBis, dim, interpolation=cv2.INTER_AREA)
     imgBis = np.invert(np.array([imgBis]))
-    prediction = modelBis.predict([imgBis])[0]
+    prediction = model.predict([imgBis])[0]
 
     index_to_letter(np.argmax(prediction))
     return np.argmax(prediction)
@@ -93,9 +96,10 @@ def predict_letter(image_array, model):
     print(f"La lettre la plus probable est {first_letter} avec une probabilité de {first_probability:.2f}%")
     print(f"La deuxième lettre la plus probable est {second_letter} avec une probabilité de {second_probability:.2f}%")
 
-    return first_letter
+    #Return in lower case
+    return first_letter.upper()
 
 
-print(predict_letter(preprocess_image("Imgs/test.png"), modelBis))
+#print(predict_letter(preprocess_image("Imgs/test.png"), modelBis))
 
 

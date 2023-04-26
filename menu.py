@@ -19,7 +19,46 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+def show_game_modes(window):
+    font = pygame.font.SysFont("Arial", 30)
 
+    game_mode_buttons = []
+
+    game_modes = ["Pictionary", "Mots", "Mathématiques"]
+    button_start_y = 300
+    button_spacing = 100
+
+    for i, mode in enumerate(game_modes):
+        button_y = button_start_y + i * button_spacing
+
+        text = font.render(mode, True, (255, 255, 255))
+        button = pygame.Rect(button_x, button_y, button_width, button_height)
+
+        game_mode_buttons.append((button, text))
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                for i, (button, _) in enumerate(game_mode_buttons):
+                    if button.collidepoint(mouse_pos):
+                        print(f"Le mode de jeu {game_modes[i]} a été sélectionné !")
+                        window.fill((0, 0, 0))
+                        pygame.display.update()
+                        # Remplacez cette ligne par le code pour lancer le mode de jeu sélectionné
+                        mainSolo("Solo",game_modes[i])
+
+        window.blit(background, (0, 0))
+
+        for button, text in game_mode_buttons:
+            pygame.draw.rect(window, (255, 255, 255), button, 3)
+            window.blit(text, (button.x + (button.width - text.get_width()) // 2, button.y + (button.height - text.get_height()) // 2))
+
+        pygame.display.update()
 
 # Charger l'image de fond
 background = pygame.image.load("Imgs/testfond.png")
@@ -99,8 +138,8 @@ def show_servers(window):
                         print(f"Le bouton Rejoindre du serveur {i + 1} a été cliqué !")
                         window.fill((0, 0, 0))
                         pygame.display.update()
-                        valTF = init()
-                        main(valTF,i+1)
+
+                        main(i+1,"Online")
                         running = False
                         break
 
@@ -139,7 +178,7 @@ while True:
                 print("Le bouton Solo a été cliqué !")
                 window.fill((0, 0, 0))
                 pygame.display.update()
-                mainSolo(init(),1)
+                show_game_modes(window)
 
 
     time = pygame.time.get_ticks() / 1000.0
