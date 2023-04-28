@@ -13,13 +13,12 @@ def setGameType(gameType):
 
 def predictImage(typeGame):
     if(typeGame == "Pictionary"):
-         print("dessin")
-        #return predict_draw(preprocess_image("Imgs/canvas.jpg"), modelDraw)
+        valFinded = predict(preprocess_image("Imgs/canvas.jpg",typeGame), modelDraw,typeGame)
     elif(typeGame == "Mots"):
-        valFinded = predict_letter(preprocess_image("Imgs/canvas.jpg"), modelLetters)
+        valFinded = predict(preprocess_image("Imgs/canvas.jpg",typeGame), modelLetters,typeGame)
         print(valFinded)
     elif(typeGame == "Mathématiques"):
-        valFinded = imagePrediction()
+        valFinded = predict(preprocess_image("Imgs/canvas.jpg",typeGame), model,typeGame)
         print(valFinded)
     window.blit(buttonValFinded, (750, 150))
     textVal = font.render(str(valFinded), True, (255, 255, 255))
@@ -28,8 +27,8 @@ def predictImage(typeGame):
 
 def generateOtherValToFind(typeGame):
     if(typeGame == "Pictionary"):
-        print("dessin")
-        return 0
+        #Pick a random word from objet_name array
+        return random.choice(objet_names)
     elif (typeGame == "Mots"):
         #Generate random letter
         with open("Mots.txt", "r") as file:
@@ -38,7 +37,30 @@ def generateOtherValToFind(typeGame):
         print("Mot à trouver : " + word_to_find)
         return word_to_find
     elif (typeGame == "Mathématiques"):
-        return np.random.randint(0, 9)
+        result = random.randint(0, 9)
+
+        operator = random.choice(["+", "-", "*", "//"])
+
+        if operator == "+":
+            num1 = random.randint(0, result)
+            num2 = result - num1
+        elif operator == "-":
+            num1 = random.randint(result, 1000)
+            num2 = num1 - result
+        elif operator == "*":
+            num1 = random.choice([i for i in range(1, 10) if result % i == 0])
+            num2 = result // num1
+        else: # operator == "//"
+            num1 = random.randint(1, 9)
+            num2 = num1 * result
+            while num2 == 0: # Check for division by 0
+                num1 = random.randint(1, 9)
+                num2 = num1 * result
+            return str(result) + ";" + str(num2) + operator + str(num1)
+
+        math_problem = f"{num1} {operator} {num2}"
+        print("Calcul à résoudre : " + math_problem)
+        return str(result)+ ";" + str(num1) + operator + str(num2)
 
         #return predict_draw(preprocess_image("Imgs/canvas.jpg"), modelDraw)
 
@@ -57,8 +79,12 @@ def mainSolo(isonline,gameType):
     letters_found = set()
     current_letter_index = 0
     
-    init()
-    setNewValue(gameType,valToFind)
+    init(gameType)
+    if(gameType == "Mathématiques"):
+        setNewValue(gameType,valToFind.split(";")[1])
+        valToFind = valToFind.split(";")[0]
+    else:
+        setNewValue(gameType,valToFind)
     score = 0   
     currentModel = setGameType(gameType)
     gomme = True
@@ -82,6 +108,8 @@ def mainSolo(isonline,gameType):
                             if gameType == "Mots":
                                 if valToFind[current_letter_index] == valFinded:
                                     print("Lettre trouvée dans l'ordre !")
+                                    lettertodraw = fontMOT.render(str(valFinded), True, (0, 255, 0))
+                                    window.blit(lettertodraw, (800+(current_letter_index*60), 300))
                                     letters_found.add(valFinded)
                                     current_letter_index += 1
                                     if current_letter_index == len(valToFind):
@@ -89,27 +117,26 @@ def mainSolo(isonline,gameType):
                                         current_letter_index = 0
                                         letters_found.clear()
                                         score += 1
-                                        init()
+                                        init(gameType)
                                         valToFind = generateOtherValToFind(gameType)
                                         setNewValue(gameType,valToFind)
-                            if valToFind == valFinded:
+                            if str(valToFind) == str(valFinded):
                                 print("trouvé")
                                 score += 1
-                                valToFind = generateOtherValToFind(gameType)
-                                setNewValue(gameType,valToFind)
+                                if(gameType == "Mathématiques"):
+                                    valToFindTMP = generateOtherValToFind(gameType)
+                                    valToFind = valToFindTMP.split(";")[0]
+                                    calculus = valToFindTMP.split(";")[1]
+                                    setNewValue(gameType,calculus)
+                                else:
+                                    valToFind = generateOtherValToFind(gameType)
+                                    setNewValue(gameType,valToFind)
                                 canvasToSave[:] = 255, 255, 255
                                 canvas[:] = 0, 0, 0
                                 
                         except Exception as e:
                             print("error")
                             print(e)
-        displayed_word = display_current_word(valToFind, letters_found)
-        word_surface = fontMOT.render(displayed_word, True, (255, 255, 255))
-        for i, letter in enumerate(displayed_word):
-            if letter in letters_found:
-                green_letter = fontMOT.render(letter, True, (0, 255, 0))
-                word_surface.blit(green_letter, (i * fontMOT.size(letter)[0], 0))
-        window.blit(word_surface, (800, 300))
 
         pygame.display.update()
         if keys[pygame.K_w]:
@@ -169,19 +196,19 @@ def mainSolo(isonline,gameType):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-        elapsed_time = time.time() - start_time
-        remaining_time = max(0, 50 - elapsed_time)
-        minutes = int(remaining_time / 60)
-        seconds = int(remaining_time % 60)
-        timer_text = f"{minutes:02d}:{seconds:02d}"
-
-        timer_surface = font.render(timer_text, True, (255, 255, 255))
-        window.blit(butTimer, (1280 - 200, 720 - 100))
-        window.blit(timer_surface, (1280 - 150, 720 - 75))
-        if remaining_time <= 0:
-            win(str(score))
-            break
-        clock.tick(60)
+        if(isonline == "Solo"):
+            elapsed_time = time.time() - start_time
+            remaining_time = max(0, 25 - elapsed_time)
+            minutes = int(remaining_time / 60)
+            seconds = int(remaining_time % 60)
+            timer_text = f"{minutes:02d}:{seconds:02d}"
+            timer_surface = font.render(timer_text, True, (255, 255, 255))
+            window.blit(butTimer, (1280 - 200, 720 - 100))
+            window.blit(timer_surface, (1280 - 150, 720 - 75))
+            if remaining_time <= 0:
+                win(str(score))
+                break
+            clock.tick(60)
 
         frame = img_rgb
         frame = np.rot90(frame)

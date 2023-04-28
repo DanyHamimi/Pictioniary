@@ -11,7 +11,7 @@ import threading
 import io
 
 from config import *
-from utils import drawLine, imagePrediction, predict_letter, preprocess_image
+from utils import drawLine, imagePrediction, preprocess_image,predict
 
 background = pygame.image.load("Imgs/testfond.png")
 tmpcordX = -1

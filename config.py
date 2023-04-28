@@ -6,6 +6,7 @@ import pygame
 
 
 has2Hands = False
+objet_names = [    "pomme",    "livre",    "éclair",    "serpent",    "la Tour Eiffel",    "banane",    "avion",    "seau",    "enveloppe",    "carotte",    "hache",    "réveil",    "chat",    "enclume",    "fleur",    "main",    "lunettes",    "papillon",    "triangle",    "shorts"]
 
 
 valFinded = -2
@@ -18,8 +19,8 @@ x_train = tf.keras.utils.normalize(x_train, axis=1)
 x_test = tf.keras.utils.normalize(x_test, axis=1)
 model = tf.keras.models.load_model('number.model')
 #modelBis = tf.keras.models.load_model('mnist.h5')
-modelLetters = tf.keras.models.load_model('emnist_lettersbis.h5')
-modelDraw = tf.keras.models.load_model('QuickDraw.h5')
+modelLetters = tf.keras.models.load_model('emnist_letters.h5')
+modelDraw = tf.keras.models.load_model('DrawModele.h5')
 
 cap = cv2.VideoCapture(0)
 
@@ -62,19 +63,18 @@ butTimer = pygame.transform.scale(butTimerBis, (200, 80))
 
     #Add buttons to the window
 
-def init():
+def init(gameType):
     window.blit(background, (0, 0))
-    draw = pygame.image.load("Imgs/guess.png")
-    window.blit(draw, (0, 480))
     canvasRecived = np.zeros((350, 350, 3), np.uint8)
     canvasRecived[:] = 255, 255, 255
-    window.blit(butTimer, (1280 - 200, 720 - 100))
+    if(gameType == "Solo"):
+        window.blit(butTimer, (1280 - 200, 720 - 100))
 
 
 def setNewValue(gameType,valToFind):
     textVars = ""
     if(gameType == "Pictionary"):
-        textVar = "Dessin à faire : "
+        textVars = "Dessin à faire : "
         textVars2 = "Dessin trouvé : "
     elif(gameType == "Mots"):
         textVars = "Mot à écrire : "

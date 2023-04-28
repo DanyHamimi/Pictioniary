@@ -40,12 +40,15 @@ def imagePrediction():
 
     index_to_letter(np.argmax(prediction))
     return np.argmax(prediction)
-def preprocess_image(image_path):
+def preprocess_image(image_path,type):
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     _, image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY_INV)
 
     # Rotation de 90 degrés dans le sens horaire
-    image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+    if(type == "Mathématiques"):
+        image = cv2.flip(image, 1)
+    if(type == "Mots"):
+        image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
 
     # Centrer l'image
     moments = cv2.moments(image)
@@ -78,6 +81,37 @@ def index_to_letter(index):
 
     return letter
 
+objet_names = [    "pomme",    "livre",    "éclair",    "serpent",    "la Tour Eiffel",    "banane",    "avion",    "seau",    "enveloppe",    "carotte",    "hache",    "réveil",    "chat",    "enclume",    "fleur",    "main",    "lunettes",    "papillon",    "triangle",    "shorts"]
+
+def predict(image_array, model, predict_type):
+    prediction = model.predict(image_array)[0]
+
+    # Obtenir les indices des deux plus grandes probabilités
+    top_2_indices = np.argpartition(prediction, -2)[-2:]
+    top_2_indices_sorted = top_2_indices[np.argsort(prediction[top_2_indices])][::-1]
+
+    # Obtenir les prédictions et les probabilités correspondantes
+    first_prediction = top_2_indices_sorted[0]
+    first_probability = prediction[top_2_indices_sorted[0]] * 100
+
+    second_prediction = top_2_indices_sorted[1]
+    second_probability = prediction[top_2_indices_sorted[1]] * 100
+    if predict_type == 'Mots':
+        print(f"La lettre la plus probable est {index_to_letter(first_prediction)} avec une probabilité de {first_probability:.2f}%")
+        print(f"La deuxième lettre la plus probable est {index_to_letter(second_prediction)} avec une probabilité de {second_probability:.2f}%")
+        return (index_to_letter(first_prediction)).upper()
+    elif predict_type == 'Pictionary':
+        print(f"Le dessin la plus probable est {objet_names[first_prediction]} avec une probabilité de {first_probability:.2f}%")
+        print(f"Le dessin la moins probable est {objet_names[second_prediction]} avec une probabilité de {second_probability:.2f}%")
+        #return objet_names[first_prediction], "OU", objet_names[second_prediction]
+        return objet_names[first_prediction]
+    elif predict_type == 'Mathématiques':
+        print(f"Le nombre le plus probable est {first_prediction} avec une probabilité de {first_probability:.2f}%")
+        print(f"Le nombre le moins probable est {second_prediction} avec une probabilité de {second_probability:.2f}%")
+        return first_prediction
+    else:
+        raise ValueError("predict_type doit être 'letter', 'draw' ou 'number'")
+
 
 def predict_letter(image_array, model):
     prediction = model.predict(image_array)[0]
@@ -98,8 +132,3 @@ def predict_letter(image_array, model):
 
     #Return in lower case
     return first_letter.upper()
-
-
-#print(predict_letter(preprocess_image("Imgs/test.png"), modelBis))
-
-
