@@ -6,7 +6,7 @@ import pygame
 
 
 has2Hands = False
-objet_names = [    "pomme",    "livre",    "éclair",    "serpent",    "la Tour Eiffel",    "banane",    "avion",    "seau",    "enveloppe",    "carotte",    "hache",    "réveil",    "chat",    "enclume",    "fleur",    "main",    "lunettes",    "papillon",    "triangle",    "shorts"]
+objet_names = ["POMME", "LIVRE", "ECLAIR", "SERPENT", "LA TOUR EIFFEL", "BANANE", "AVION", "SEAU", "ENVELOPPE", "CAROTTE", "HACHE", "REVEIL", "CHAT", "ENCUME", "FLEUR", "MAIN", "LUNETTES", "PAPILLON", "TRIANGLE", "SHORTS"]
 
 
 valFinded = -2

@@ -60,16 +60,6 @@ def ask_for_ip(window):
         pygame.display.update()
 
     return text
-def connect_to_server(ip, port=12345):
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(5)
-        sock.connect((ip, port))
-        return True
-    except Exception as e:
-        print(f"Erreur lors de la connexion au serveur: {e}")
-        return False
-    
 def show_game_modes(window):
     font = pygame.font.SysFont("Arial", 30)
 
@@ -117,7 +107,7 @@ def show_game_modes(window):
                         window.fill((0, 0, 0))
                         pygame.display.update()
                         # Remplacez cette ligne par le code pour lancer le mode de jeu sélectionné
-                        mainSolo("Solo",game_modes[i])
+                        mainSolo("Solo",game_modes[i],-1,0)
 
         window.blit(background, (0, 0))
 
@@ -180,16 +170,18 @@ buttonQuit_y = logo_y + logo_height + 300
 
 # Popup pour demander le pseudo
 
-def show_servers(window, welcomemsg):
+def show_servers(window, welcomemsg,ipserv):
     font = pygame.font.SysFont("Arial", 30)
 
     server_buttons = []
     join_buttons = []
+    tableauMsgs = welcomemsg.split(";")
+    tableauMsgs.pop()
 
-    for i in range(5):
-        server_button_y = server_button_start_y + i * server_button_spacing
+    for index, msg in enumerate(tableauMsgs):
+        server_button_y = server_button_start_y + index * server_button_spacing
 
-        server_text = font.render(f"Server {i + 1} (0/2)", True, (255, 255, 255))
+        server_text = font.render(msg, True, (255, 255, 255))
         server_button = pygame.Rect(button_x, server_button_y, server_button_width, server_button_height)
         join_text = font.render("Rejoindre", True, (255, 255, 255))
         join_button = pygame.Rect(button_x + server_button_width + 50, server_button_y + (server_button_height - server_button_join_height) // 2, server_button_join_width, server_button_join_height)
@@ -226,8 +218,11 @@ def show_servers(window, welcomemsg):
                         print(f"Le bouton Rejoindre du serveur {i + 1} a été cliqué !")
                         window.fill((0, 0, 0))
                         pygame.display.update()
-
-                        mainSolo("Online", "Mots")
+                        typeGame = tableauMsgs[i].split(" ")[4].capitalize()
+                        if typeGame == "Mathematiques":
+                            typeGame = "Mathématiques"
+                        max_players = (tableauMsgs[i].split(" ")[3]).split("/")[1]
+                        mainSolo("Online", typeGame,i,ipserv)
                         running = False
                         break
 
@@ -247,52 +242,6 @@ def show_servers(window, welcomemsg):
         pygame.display.update()
 
 
-    font = pygame.font.SysFont("Arial", 30)
-
-    server_buttons = []
-    join_buttons = []
-
-    for i in range(5):
-        server_button_y = server_button_start_y + i * server_button_spacing
-
-        server_text = font.render(f"Server {i + 1} (0/2)", True, (255, 255, 255))
-        server_button = pygame.Rect(button_x, server_button_y, server_button_width, server_button_height)
-        join_text = font.render("Rejoindre", True, (255, 255, 255))
-        join_button = pygame.Rect(button_x + server_button_width + 50, server_button_y + (server_button_height - server_button_join_height) // 2, server_button_join_width, server_button_join_height)
-
-        server_buttons.append((server_button, server_text))
-        join_buttons.append((join_button, join_text))
-
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-                for i, (join_button, _) in enumerate(join_buttons):
-                    if join_button.collidepoint(mouse_pos):
-                        print(f"Le bouton Rejoindre du serveur {i + 1} a été cliqué !")
-                        window.fill((0, 0, 0))
-                        pygame.display.update()
-
-                        main(i+1,"Online")
-                        running = False
-                        break
-
-        window.blit(background, (0, 0))
-
-        for server_button, server_text in server_buttons:
-            pygame.draw.rect(window, (255, 255, 255), server_button, 3)
-            window.blit(server_text, (server_button.x + (server_button.width - server_text.get_width()) // 2, server_button.y + (server_button.height - server_text.get_height()) // 2))
-
-        for join_button, join_text in join_buttons:
-            pygame.draw.rect(window, (255, 255, 255), join_button, 3)
-            window.blit(join_text, (join_button.x + (join_button.width - join_text.get_width()) // 2, join_button.y + (join_button.height - join_text.get_height()) // 2))
-
-        pygame.display.update()
-
 
 # Boucle principale du jeu
 while True:
@@ -309,7 +258,7 @@ while True:
                 pygame.display.update()
                 ip = ask_for_ip(window)
                 print("L'adresse IP saisie est :", ip)
-                SERVER_HOST = "localhost"
+                SERVER_HOST = ip
                 SERVER_PORT = 8080
                 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 try :
@@ -320,13 +269,16 @@ while True:
                         welcomeMessage = client_socket.recv(1024)
                         welcomemsg = welcomeMessage.decode()
                         print(welcomemsg)
-                        show_servers(window, welcomemsg)
+                        show_servers(window, welcomemsg,ip)
                     except socket.timeout:
                         print("Timeout: No response received in 4 seconds. Disconnecting...")
                     #wait for server to send welcome message
                     welcomeMessage = client_socket.recv(1024)
                     print(welcomeMessage.decode())
-                except :
+                    #Disconnect from server
+                    client_socket.close()
+                except Exception as e:
+                    print(e)
                     print("Impossible de se connecter au serveur. Retour au menu principal.")
             elif buttonQuit_x <= mouse_pos[0] <= buttonQuit_x + buttonQuit_width and buttonQuit_y <= mouse_pos[1] <= buttonQuit_y + buttonQuit_height:
                 print("Le bouton Quit a été cliqué !")

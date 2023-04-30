@@ -81,7 +81,7 @@ def index_to_letter(index):
 
     return letter
 
-objet_names = [    "pomme",    "livre",    "éclair",    "serpent",    "la Tour Eiffel",    "banane",    "avion",    "seau",    "enveloppe",    "carotte",    "hache",    "réveil",    "chat",    "enclume",    "fleur",    "main",    "lunettes",    "papillon",    "triangle",    "shorts"]
+objet_names = ["POMME", "LIVRE", "ECLAIR", "SERPENT", "LA TOUR EIFFEL", "BANANE", "AVION", "SEAU", "ENVELOPPE", "CAROTTE", "HACHE", "REVEIL", "CHAT", "ENCUME", "FLEUR", "MAIN", "LUNETTES", "PAPILLON", "TRIANGLE", "SHORTS"]
 
 def predict(image_array, model, predict_type):
     prediction = model.predict(image_array)[0]

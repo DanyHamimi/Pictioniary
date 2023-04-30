@@ -16,7 +16,7 @@ public class VideoServer {
 
     public static void main(String[] args) throws IOException {
         for (int i = 0; i < MAX_GAMES; i++) {
-            games.put(i, new Game(Game.GameType.MOTS));
+            games.put(i, new Game(Game.GameType.MATHEMATIQUES));
         }
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -58,11 +58,53 @@ public class VideoServer {
             return name;
         }
 
-
+        public static String generateMathProblem() {
+            Random random = new Random();
+            int result = random.nextInt(10);
+            String operator = "";
+            int num1 = 0;
+            int num2 = 0;
+        
+            switch (random.nextInt(4)) {
+                case 0:
+                    operator = "+";
+                    num1 = random.nextInt(result + 1);
+                    num2 = result - num1;
+                    break;
+                case 1:
+                    operator = "-";
+                    num1 = random.nextInt(1000 - result) + result;
+                    num2 = num1 - result;
+                    break;
+                case 2:
+                    operator = "*";
+                    int[] factors = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+                    for (int i = factors.length - 1; i >= 0; i--) {
+                        if (result % factors[i] == 0) {
+                            num1 = factors[i];
+                            num2 = result / num1;
+                            break;
+                        }
+                    }
+                    break;
+                case 3:
+                    operator = "//";
+                    while (num2 == 0) {
+                        num1 = random.nextInt(9) + 1;
+                        num2 = num1 * result;
+                    }
+                    break;
+            }
+        
+            String mathProblem = String.format("%d %s %d", num1, operator, num2);
+            System.out.println("Calcul à résoudre : " + mathProblem);
+        
+            return result + ";" + num1 + operator + num2;
+        }
         public void updateValToFind() {
             switch (gameType) {
                 case MATHEMATIQUES:
-                    valToFind = String.valueOf((int) (Math.random() * 10));
+                    valToFind = generateMathProblem();
                     break;
                 case MOTS:
                     valToFind = mots.get((int) (Math.random() * mots.size()));
