@@ -66,22 +66,28 @@ def receive_and_process_images(client_socket):
     global inGame
     while True:
         try:
-            print("je suis ici")
+            #("je suis ici")
             int_data = client_socket.recv(4)
             if not int_data or len(int_data) < 4:
                 break
             int_val = struct.unpack(">I", int_data)[0]
-            print("valeur recue" + str(int_val))
+            #print("valeur recue" + str(int_val))
             if int_val != 500 and int_val != 450:
                 score_data = client_socket.recv(4)
                 if not score_data:
                     continue
-                print("score recu" + str(score_data))
+                #print("score recu" + str(score_data))
                 score = struct.unpack(">I", score_data)[0]
                 if score == 500:
                     print("PERDU")
                     inGame = False
                     break
+
+                id_recived = client_socket.recv(4)
+                if not id_recived:
+                    continue
+                id = struct.unpack(">I", id_recived)[0]
+                print("id recu" + str(id))
                 data = client_socket.recv(4)
                 if not data:
                     continue
@@ -111,9 +117,9 @@ def receive_and_process_images(client_socket):
                 if not username_data:
                     continue
                 username = username_data.decode()
-                print("image recue")
+                #print("image recue")
             else:
-                print("on rentre ici")
+                #print("on rentre ici")
                 value_length_data = client_socket.recv(4)
                 if not value_length_data:
                     continue

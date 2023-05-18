@@ -156,7 +156,7 @@ public class VideoServer {
                 Game game = games.get(idServer);
 
 
-                if (game.clients.size() < MAX_PLAYERS_PER_GAME) {
+                if (game.clients.size() < ) {
                     game.clients.put(clientSocket, outputStream);
                     game.scores.put(clientSocket, 0);
                     System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " ajouté à la partie " + servIndexUser);
