@@ -45,8 +45,10 @@ public class VideoServer {
     }
     
     public static void main(String[] args) throws IOException {
-        games.put(0, new Game(Game.GameType.PICTIONARY,"Default",2));
-        NB_ACTUAL_GAMES++;   //On fait une game défaut
+        for(int i = 0;i<1;i++){
+            games.put(i, new Game(Game.GameType.PICTIONARY,"Default",4));
+            NB_ACTUAL_GAMES++;   //On fait une game défaut
+        }
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Serveur en attente de connexions...");
             while (true) {
@@ -68,6 +70,7 @@ public class VideoServer {
         private List<String> mots;
         private List<String> pictionaryWords = Arrays.asList("pomme", "livre", "eclair", "serpent", "la Tour Eiffel", "banane", "avion", "seau", "enveloppe", "carotte", "hache", "reveil", "chat", "enclume", "fleur", "main", "lunettes", "papillon", "triangle", "shorts");
         ConcurrentHashMap<Socket, DataOutputStream> clients = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Socket, Integer> clientIndices = new ConcurrentHashMap<>(); // Store the indices for each client
         String valToFind = "1";
         ConcurrentHashMap<Socket, Integer> scores = new ConcurrentHashMap<>();
         public Game(GameType gameType, String name, int maxplayergame) {
@@ -177,6 +180,7 @@ public class VideoServer {
         private final Socket clientSocket;
         private String username;
         private int idServer;
+        private int clientIndex; // Store the index for the client
 
         public ClientHandler(Socket clientSocket) {
             this.clientSocket = clientSocket;
@@ -224,14 +228,15 @@ public class VideoServer {
                     username = receivedMessage.split(";")[0];
                     idServer = Integer.parseInt(receivedMessage.split(";")[1]);
 
-                    int servIndexUser = idServer;
                     Game game = games.get(idServer);
 
 
                     if (game.clients.size() < game.maxplayergame) {
+                        clientIndex = game.clients.size() + 1; // Assign the index for the client
                         game.clients.put(clientSocket, outputStream);
                         game.scores.put(clientSocket, 0);
-                        System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " ajouté à la partie " + servIndexUser);
+                        game.clientIndices.put(clientSocket, clientIndex); // Store the index for the client
+                        System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " ajouté à la partie " + idServer + " avec l'index " + clientIndex);
 
                         if (game.clients.size() == 1) {
                             game.updateValToFind();
@@ -273,8 +278,11 @@ public class VideoServer {
                                     .filter(entry -> entry.getKey() != clientSocket)
                                     .forEach(entry -> {
                                         try {
+                                            //print the index of the client
+                                            System.out.println("Index "+ clientIndex);
                                             entry.getValue().writeInt(2);
                                             entry.getValue().writeInt(score);
+                                            entry.getValue().writeInt(clientIndex); // Send the index of the client
                                             entry.getValue().writeInt(length);
                                             entry.getValue().write(image);
                                             String userToSend = username + "\0";
@@ -298,6 +306,7 @@ public class VideoServer {
                 if (game != null) {
                     game.clients.remove(clientSocket);
                     game.scores.remove(clientSocket);
+                    game.clientIndices.remove(clientSocket); // Remove the index for the client
 
                 }
 
@@ -311,4 +320,3 @@ public class VideoServer {
         }
     }
 }
-

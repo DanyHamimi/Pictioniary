@@ -4,9 +4,16 @@ import re
 import sys
 
 from realmain import *
+has2Hands = False
 global score
 valToFind = "0"
 scorePlayer2 = 0
+scorePlayer3 = 0
+scorePlayer4 = 0
+AmountPlayer = 0
+
+ListPlayers = []
+
 global send_thread
 global receive_thread
 fontMOT = pygame.font.Font('freesansbold.ttf', 60)
@@ -14,14 +21,24 @@ stop_flag = threading.Event()
 isEndend = 0
 Online = 0
 typeGa = ""
+back_text = font.render("Quitter", True, (255, 255, 255))
+back_button_width = 150
+back_button_height = 50
+back_button_x = 50
+back_button_y = 650
+back_button = pygame.Rect(back_button_x, back_button_y,
+                          back_button_width, back_button_height)
+
 
 def setGameType(gameType):
-    if(gameType == "Pictionary"):
+    if (gameType == "Pictionary"):
         return modelDraw
-    elif(gameType == "Mots"):
+    elif (gameType == "Mots"):
         return modelLetters
-    elif(gameType == "Mathématiques"):
+    elif (gameType == "Mathématiques"):
         return model
+
+
 def loose():
     window.fill((255, 255, 255))
     window.blit(background, (0, 0))
@@ -32,33 +49,38 @@ def loose():
     pygame.display.update()
     pygame.time.wait(3000)
 
+
 def predictImage(typeGame):
-    if(typeGame == "Pictionary"):
-        valFinded = predict(preprocess_image("Imgs/canvas.jpg",typeGame), modelDraw,typeGame)
-    elif(typeGame == "Mots"):
-        valFinded = predict(preprocess_image("Imgs/canvas.jpg",typeGame), modelLetters,typeGame)
-        print(valFinded)
-    elif(typeGame == "Mathématiques"):
-        valFinded = predict(preprocess_image("Imgs/canvas.jpg",typeGame), model,typeGame)
-        print(valFinded)
+    if (typeGame == "Pictionary"):
+        valFinded = predict(preprocess_image(
+            "Imgs/canvas.jpg", typeGame), modelDraw, typeGame)
+    elif (typeGame == "Mots"):
+        valFinded = predict(preprocess_image(
+            "Imgs/canvas.jpg", typeGame), modelLetters, typeGame)
+        # print(valFinded)
+    elif (typeGame == "Mathématiques"):
+        valFinded = predict(preprocess_image(
+            "Imgs/canvas.jpg", typeGame), model, typeGame)
+        # print(valFinded)
     window.blit(buttonValFinded, (750, 150))
     textVal = font.render(str(valFinded), True, (255, 255, 255))
     window.blit(textVal, (825, 165))
     return valFinded
 
+
 def generateOtherValToFind(typeGame):
     global Online
-    if Online != "Solo" :
+    if Online != "Solo":
         return valToFind
-    if(typeGame == "Pictionary"):
-        #Pick a random word from objet_name array
+    if (typeGame == "Pictionary"):
+        # Pick a random word from objet_name array
         return random.choice(objet_names)
     elif (typeGame == "Mots"):
-        #Generate random letter
+        # Generate random letter
         with open("Mots.txt", "r") as file:
             words = file.readlines()
         word_to_find = random.choice(words).strip()
-        print("Mot à trouver : " + word_to_find)
+        # print("Mot à trouver : " + word_to_find)
         return word_to_find
     elif (typeGame == "Mathématiques"):
         result = random.randint(0, 9)
@@ -74,21 +96,23 @@ def generateOtherValToFind(typeGame):
         elif operator == "*":
             num1 = random.choice([i for i in range(1, 10) if result % i == 0])
             num2 = result // num1
-        else: # operator == "//"
+        else:  # operator == "//"
             num1 = random.randint(1, 9)
             num2 = num1 * result
-            while num2 == 0: # Check for division by 0
+            while num2 == 0:  # Check for division by 0
                 num1 = random.randint(1, 9)
                 num2 = num1 * result
             return str(result) + ";" + str(num2) + operator + str(num1)
 
         math_problem = f"{num1} {operator} {num2}"
-        print("Calcul à résoudre : " + math_problem)
-        return str(result)+ ";" + str(num1) + operator + str(num2)
+        # print("Calcul à résoudre : " + math_problem)
+        return str(result) + ";" + str(num1) + operator + str(num2)
+
 
 canvasPlayer2 = np.zeros((480, 640, 3), np.uint8)
 canvasPlayer2[:] = 255, 255, 255
 player2Surface = pygame.surfarray.make_surface(canvasPlayer2)
+
 
 def display_current_word(word, letters_found):
     displayed_word = ""
@@ -103,9 +127,9 @@ def display_current_word(word, letters_found):
 def updateNewOlineValue(newVal, typeGa):
     global valToFind
     if typeGa == "Mathématiques":
-        print("Math")
+        # print("Math")
         valToFindTMP = newVal
-        print(valToFindTMP)
+        # print(valToFindTMP)
         valToFind = valToFindTMP.split(";")[0]
         calculus = valToFindTMP.split(";")[1]
         setNewValue(typeGa, calculus)
@@ -121,15 +145,14 @@ def send_image(client_socket):
     global isEndend
     while not stop_flag.is_set():
         try:
-            #print("envoie")
-            #Convert
+            # print("envoie")
+            # Convert
             canvas_img = Image.fromarray(canvasToSave)
             canvas_img = canvas_img.crop((200, 50, 550, 400))
             canvas_img = canvas_img.resize((350, 350))
             img_byte_arr = io.BytesIO()
             canvas_img.save(img_byte_arr, format='JPEG')
             image_data = img_byte_arr.getvalue()
-
 
             size = len(image_data)
             score_bytes = struct.pack('>I', score)
@@ -145,7 +168,63 @@ def send_image(client_socket):
         time.sleep(0.1)
 
 
-    
+def drawPlayerXcanvas(canvasRecived, id, scorep, usernamep):
+    global AmountPlayer
+    global ListPlayers
+    # Convert AmontPlayer to int
+    userNameWithoutSpace = usernamep.replace("\0", "")
+    if int(AmountPlayer) > 2:
+        canvasRecived = canvasRecived.resize((233, 240))
+        fontUser_Score = pygame.font.SysFont('freesansbold', 20)
+        try:
+            print("ici")
+            # Selon la postion de id dans le tableau on blit le canvas à un endroit différent
+            if id == ListPlayers[0]:
+                window.blit(pygame.image.frombuffer(canvasRecived.tobytes(
+                ), canvasRecived.size, canvasRecived.mode), (698, 480))
+                text = fontUser_Score.render(
+                    userNameWithoutSpace+" :", True, (0, 0, 0))
+                window.blit(text, (698, 480))
+                text = fontUser_Score.render(
+                    "Score : "+str(scorep), True, (0, 0, 0))
+                window.blit(text, (698, 500))
+                return
+            elif id == ListPlayers[1]:
+                window.blit(pygame.image.frombuffer(canvasRecived.tobytes(
+                ), canvasRecived.size, canvasRecived.mode), (698+234, 480))
+                text = fontUser_Score.render(
+                    userNameWithoutSpace+" :", True, (0, 0, 0))
+                window.blit(text, (698+234, 480))
+                text = fontUser_Score.render(
+                    "Score : "+str(scorep), True, (0, 0, 0))
+                window.blit(text, (698+234, 500))
+
+                return
+            elif id == ListPlayers[2]:
+                window.blit(pygame.image.frombuffer(canvasRecived.tobytes(
+                ), canvasRecived.size, canvasRecived.mode), (814, 240))
+                text = fontUser_Score.render(
+                    userNameWithoutSpace+" :", True, (0, 0, 0))
+                window.blit(text, (814, 240))
+                text = fontUser_Score.render(
+                    "Score : "+str(scorep), True, (0, 0, 0))
+                window.blit(text, (814, 260))
+                return
+        except Exception as e:
+            print(e)
+            return
+    else:
+        window.blit(pygame.image.frombuffer(canvasRecived.tobytes(),
+                    canvasRecived.size, canvasRecived.mode), (900, 340))
+        # Write into the canvas the score and the username
+        text = font.render(userNameWithoutSpace+" :", True, (255, 255, 255))
+        window.blit(text, (900, 300))
+        text = font.render("Score : "+str(scorep), True, (0, 0, 0))
+        window.blit(text, (900, 350))
+
+        return
+
+
 def receive_and_process_images(client_socket):
     global typeGa
     global valToFind
@@ -153,8 +232,9 @@ def receive_and_process_images(client_socket):
     global scorePlayer2
     global stop_flag
     global isEndend
+    global ListPlayers
     while not stop_flag.is_set():
-        print("recoit")
+        # print("recoit")
         try:
             int_data = client_socket.recv(4)
             if not int_data or len(int_data) < 4:
@@ -165,20 +245,28 @@ def receive_and_process_images(client_socket):
                 if not score_data:
                     continue
                 score = struct.unpack(">I", score_data)[0]
-                scorePlayer2 = score
                 print("score recu" + str(score))
+                id_recived = client_socket.recv(4)
+                if not id_recived:
+                    continue
+                id = struct.unpack(">I", id_recived)[0]
+                print("id recu" + str(id))
+                # si l'id recu n'est pas dans le tableau des players alors on l'ajoute
+                if id not in ListPlayers:
+                    ListPlayers.append(id)
                 data = client_socket.recv(4)
                 if not data:
                     continue
                 length = struct.unpack(">I", data)[0]
                 img_data = b""
                 while len(img_data) < length:
-                    img_data += client_socket.recv(min(length - len(img_data), 4096))
+                    img_data += client_socket.recv(
+                        min(length - len(img_data), 4096))
                 # print(f'Image received with size {length/1024} bytes and score {score}.')
                 img = Image.open(io.BytesIO(img_data))
                 canvasRecived = img.copy().convert("RGBA")
                 canvasRecived = canvasRecived.resize((350, 350))
-                window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (900, 340))
+                # window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (900, 340))
 
                 # Recive a string
                 username_length_data = client_socket.recv(4)
@@ -193,7 +281,9 @@ def receive_and_process_images(client_socket):
                     )
                 if not username_data:
                     continue
-                username = username_data.decode()
+                usernameR = username_data.decode()
+                print("usernameR", usernameR)
+                drawPlayerXcanvas(canvasRecived, id, score, usernameR)
             else:
                 value_length_data = client_socket.recv(4)
                 if not value_length_data:
@@ -201,70 +291,76 @@ def receive_and_process_images(client_socket):
                 value_length = struct.unpack(">I", value_length_data)[0]
 
                 newValue_data = b""
-                print("value_length", value_length)
+                # print("value_length", value_length)
                 while len(newValue_data) < value_length:
-                    received_data = client_socket.recv(min(value_length - len(newValue_data), 4096))
-                    if not received_data: break
+                    received_data = client_socket.recv(
+                        min(value_length - len(newValue_data), 4096))
+                    if not received_data:
+                        break
                     newValue_data += received_data
                 newValue = newValue_data.decode()
                 valToFind = newValue.upper()
-                print("newValue", newValue)
+                # print("newValue", newValue)
                 updateNewOlineValue(newValue.upper(), typeGa)
-                
-
-
 
         except Exception as e:
             print(e)
-            
+            print("DECONNECTE")
+
             break
 
 
-def mainSolo(isonline,gameType,idServ,ipServ):
+def mainSolo(isonline, gameType, idServ, ipServ, nbPlayers, username):
+    # print("Partie avec "+nbPlayers+" joueurs")
     global score
     global valToFind
     global stop_flag
     global isEndend
-    global Online 
+    global Online
     global typeGa
+    global has2Hands
+    global AmountPlayer
     typeGa = gameType
     Online = isonline
 
-    
+    AmountPlayer = nbPlayers
+
     score = 0
     valToFind = generateOtherValToFind(gameType)
-    if(isonline != "Solo"):
+    if (isonline != "Solo"):
 
         SERVER_HOST = ipServ
         SERVER_PORT = 8080
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             client_socket.connect((SERVER_HOST, SERVER_PORT))
-            valueWelcome = "Brayan"+";"+str(idServ)
+            valueWelcome = username+";"+str(idServ)
             client_socket.sendall((valueWelcome + "\n").encode())
 
             try:
-                #Revice an int 
+                # Revice an int
                 int_data = client_socket.recv(4)
                 servIndex = struct.unpack('>I', int_data)[0]
-                print(servIndex)
-                if(servIndex == 400) :
+                # print(servIndex)
+                if (servIndex == 400):
                     print("Erreur serveur plein")
-                    exit()
+                    return
 
                 value_length_data = client_socket.recv(4)
                 value_length = struct.unpack('>I', value_length_data)[0]
                 newValue_data = b''
-                print("value_length", value_length)
                 while len(newValue_data) < value_length:
-                    received_data = client_socket.recv(min(value_length - len(newValue_data), 4096))
-                    if not received_data: break
+                    received_data = client_socket.recv(
+                        min(value_length - len(newValue_data), 4096))
+                    if not received_data:
+                        break
                     newValue_data += received_data
                 newValue = newValue_data.decode()
                 valToFind = newValue.upper()
-                print("newValue", newValue)
-                send_thread = threading.Thread(target=send_image, args=(client_socket,))
-                receive_thread = threading.Thread(target=receive_and_process_images, args=(client_socket,))
+                send_thread = threading.Thread(
+                    target=send_image, args=(client_socket,))
+                receive_thread = threading.Thread(
+                    target=receive_and_process_images, args=(client_socket,))
                 send_thread.start()
                 receive_thread.start()
             except socket.timeout:
@@ -276,23 +372,22 @@ def mainSolo(isonline,gameType,idServ,ipServ):
 
     letters_found = set()
     current_letter_index = 0
-    
+
     init(gameType)
-    if(gameType == "Mathématiques"):
-        setNewValue(gameType,valToFind.split(";")[1])
+    if (gameType == "Mathématiques"):
+        setNewValue(gameType, valToFind.split(";")[1])
         valToFind = valToFind.split(";")[0]
     else:
-        setNewValue(gameType,valToFind)
-  
+        setNewValue(gameType, valToFind)
+
     currentModel = setGameType(gameType)
     gomme = True
     tmpcordX = -1
     tmpcordY = -1
-    #servIndexUser = servIndex
-    username = ""
+    # servIndexUser = servIndex
 
-    print("Valeur a trouver : " + str(valToFind))
-    if(isonline == "Solo"):
+    # print("Valeur a trouver : " + str(valToFind))
+    if (isonline == "Solo"):
         start_time = time.time()
         clock = pygame.time.Clock()
     while True:
@@ -300,57 +395,60 @@ def mainSolo(isonline,gameType,idServ,ipServ):
         if isonline == "Online":
             if isEndend == 1:
                 isEndend = 0
-                print("Player 2 win")
+                # print("Player 2 win")
                 stop_flag.set()
                 send_thread.join()
                 receive_thread.join()
                 client_socket.close()
                 print("ciao")
                 stop_flag.clear()
+                ListPlayers.clear()
                 break
-
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
-                        print("photo")
-                        try:
-                            valFinded = predictImage(gameType)
-                            print("Valeur à trouver " + str(valToFind) + "Valeur trouvée " + str(valFinded))
-                            if gameType == "Mots":
-                                if valToFind[current_letter_index] == valFinded:
-                                    print("Lettre trouvée dans l'ordre !")
-                                    lettertodraw = fontMOT.render(str(valFinded), True, (0, 255, 0))
-                                    window.blit(lettertodraw, (800+(current_letter_index*60), 300))
-                                    letters_found.add(valFinded)
-                                    current_letter_index += 1
-                                    if current_letter_index == len(valToFind):
-                                        print("Toutes les lettres du mot ont été trouvées dans l'ordre !")
-                                        current_letter_index = 0
-                                        letters_found.clear()
-                                        score += 1
-                                        init(gameType)
-                                        if(isonline == "Solo"):
-                                            valToFind = generateOtherValToFind(gameType)
-                                        setNewValue(gameType,valToFind)
-                            if str(valToFind) == str(valFinded):
-                                print("trouvé")
-                                score += 1
-                                if(gameType == "Mathématiques" and isonline == "Solo"):
-                                    print("Math")
-                                    valToFindTMP = generateOtherValToFind(gameType)
-                                    print(valToFindTMP)
-                                    valToFind = valToFindTMP.split(";")[0]
-                                    calculus = valToFindTMP.split(";")[1]
-                                    setNewValue(gameType,calculus)
-                                elif(isonline == "Solo"):
-                                    valToFind = generateOtherValToFind(gameType)
-                                    setNewValue(gameType,valToFind)
-                                canvasToSave[:] = 255, 255, 255
-                                canvas[:] = 0, 0, 0
-                                
-                        except Exception as e:
-                            print("error")
-                            print(e)
+            # print("photo")
+            try:
+                valFinded = predictImage(gameType)
+                print("Valeur à trouver " + str(valToFind) +
+                      "Valeur trouvée " + str(valFinded))
+                if gameType == "Mots":
+                    if valToFind[current_letter_index] == valFinded:
+                        # print("Lettre trouvée dans l'ordre !")
+                        lettertodraw = fontMOT.render(
+                            str(valFinded), True, (0, 255, 0))
+                        window.blit(
+                            lettertodraw, (30+(current_letter_index*40), 485))
+                        letters_found.add(valFinded)
+                        current_letter_index += 1
+                        if current_letter_index == len(valToFind):
+                            # print("Toutes les lettres du mot ont été trouvées dans l'ordre !")
+                            current_letter_index = 0
+                            letters_found.clear()
+                            score += 1
+                            init(gameType)
+                            if (isonline == "Solo"):
+                                valToFind = generateOtherValToFind(gameType)
+                            setNewValue(gameType, valToFind)
+                if str(valToFind) == str(valFinded):
+                    # print("trouvé")
+                    score += 1
+                    if (gameType == "Mathématiques" and isonline == "Solo"):
+                        # print("Math")
+                        valToFindTMP = generateOtherValToFind(gameType)
+                        # print(valToFindTMP)
+                        valToFind = valToFindTMP.split(";")[0]
+                        calculus = valToFindTMP.split(";")[1]
+                        setNewValue(gameType, calculus)
+                    elif (isonline == "Solo"):
+                        valToFind = generateOtherValToFind(gameType)
+                        setNewValue(gameType, valToFind)
+                    canvasToSave[:] = 255, 255, 255
+                    canvas[:] = 0, 0, 0
+
+            except Exception as e:
+                print("error")
+                print(e)
 
         pygame.display.update()
         if keys[pygame.K_w]:
@@ -358,9 +456,9 @@ def mainSolo(isonline,gameType,idServ,ipServ):
             canvas[:] = 0, 0, 0
 
         if keys[pygame.K_x]:
-             gomme = not gomme
-        
-        #print(valToFind)
+            gomme = not gomme
+
+        # print(valToFind)
         pygame.display.update()
 
         success, img = cap.read()
@@ -373,7 +471,8 @@ def mainSolo(isonline,gameType,idServ,ipServ):
             if has2Hands:
                 print("2 mains détectées")
 
-        if results.multi_hand_landmarks and len(results.multi_hand_landmarks) == 1:  # Now detect only one hand
+        # Now detect only one hand
+        if results.multi_hand_landmarks and len(results.multi_hand_landmarks) == 1:
             has2Hands = False
             for handLms in results.multi_hand_landmarks:
                 for id, lm in enumerate(handLms.landmark):
@@ -381,7 +480,8 @@ def mainSolo(isonline,gameType,idServ,ipServ):
                     cx, cy = int(lm.x * w), int(lm.y * h)
                     if id == 8:
                         # print("Coords de 8", cx, cy)
-                        cv2.circle(img, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
+                        cv2.circle(img, (cx, cy), 15,
+                                   (255, 0, 255), cv2.FILLED)
                         tmpx8 = cx
                         tmpy8 = cy
                         if tmpx8 != 0 and tmpy8 != 0:
@@ -404,8 +504,6 @@ def mainSolo(isonline,gameType,idServ,ipServ):
 
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 if isonline != "Solo":
@@ -413,10 +511,24 @@ def mainSolo(isonline,gameType,idServ,ipServ):
                     send_thread.join()
                     receive_thread.join()
                     client_socket.close()
+
                     break
                 pygame.quit()
                 sys.exit()
-        if(isonline == "Solo"):
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if back_button.collidepoint(mouse_pos):
+                    if (isonline != "Solo"):
+                        client_socket.close()
+                        stop_flag.set()
+                        send_thread.join()
+                        receive_thread.join()
+                        stop_flag.clear()
+                        return
+                    window.fill((0, 0, 0))
+                    pygame.display.update()
+                    return
+        if (isonline == "Solo"):
             elapsed_time = time.time() - start_time
             remaining_time = max(0, 25 - elapsed_time)
             minutes = int(remaining_time / 60)
@@ -447,7 +559,6 @@ def mainSolo(isonline,gameType,idServ,ipServ):
         # Save canvas to image
         byteFrame = pygame.image.tostring(frameCanvas, 'RGBA')
 
-
-
-
-
+        # draw precedent button
+        window.blit(back_text, (back_button.x + (back_button.width - back_text.get_width()) //
+                    2, back_button.y + (back_button.height - back_text.get_height()) // 2))
