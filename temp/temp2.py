@@ -1,3 +1,8 @@
+import threading
+import socket
+from PIL import Image
+import io
+import time
 import random
 import struct
 import numpy as np
@@ -11,13 +16,6 @@ pygame.init()
 window = pygame.display.set_mode((1280, 720))
 score = 0
 
-
-import time
-import io
-from PIL import Image
-import socket
-import struct
-import threading
 
 valToFind = "test"
 # Create a canvas called canvasToSave
@@ -66,17 +64,17 @@ def receive_and_process_images(client_socket):
     global inGame
     while True:
         try:
-            #("je suis ici")
+            # ("je suis ici")
             int_data = client_socket.recv(4)
             if not int_data or len(int_data) < 4:
                 break
             int_val = struct.unpack(">I", int_data)[0]
-            #print("valeur recue" + str(int_val))
+            # print("valeur recue" + str(int_val))
             if int_val != 500 and int_val != 450:
                 score_data = client_socket.recv(4)
                 if not score_data:
                     continue
-                #print("score recu" + str(score_data))
+                # print("score recu" + str(score_data))
                 score = struct.unpack(">I", score_data)[0]
                 if score == 500:
                     print("PERDU")
@@ -94,14 +92,14 @@ def receive_and_process_images(client_socket):
                 length = struct.unpack(">I", data)[0]
                 img_data = b""
                 while len(img_data) < length:
-                    img_data += client_socket.recv(min(length - len(img_data), 4096))
+                    img_data += client_socket.recv(
+                        min(length - len(img_data), 4096))
                 # print(f'Image received with size {length/1024} bytes and score {score}.')
                 img = Image.open(io.BytesIO(img_data))
                 canvasRecived = img.copy().convert("RGBA")
                 canvasRecived = canvasRecived.resize((350, 350))
-                window.blit(pygame.image.frombuffer(canvasRecived.tobytes(), canvasRecived.size, canvasRecived.mode), (900, 340))
-
-                
+                window.blit(pygame.image.frombuffer(canvasRecived.tobytes(
+                ), canvasRecived.size, canvasRecived.mode), (900, 340))
 
                 # Recive a string
                 username_length_data = client_socket.recv(4)
@@ -117,9 +115,9 @@ def receive_and_process_images(client_socket):
                 if not username_data:
                     continue
                 username = username_data.decode()
-                #print("image recue")
+                # print("image recue")
             else:
-                #print("on rentre ici")
+                # print("on rentre ici")
                 value_length_data = client_socket.recv(4)
                 if not value_length_data:
                     continue
@@ -186,7 +184,8 @@ if 1 == 1:
                 newValue_data += received_data
             newValue = newValue_data.decode()
             print("newValue", newValue)
-            send_thread = threading.Thread(target=send_image, args=(client_socket,))
+            send_thread = threading.Thread(
+                target=send_image, args=(client_socket,))
             receive_thread = threading.Thread(
                 target=receive_and_process_images, args=(client_socket,)
             )
@@ -217,10 +216,11 @@ while True:
                 print("x pressed")
                 score = score + 1
     # Dessiner le canvas et les autres éléments de l'interface utilisateur
-    #window.fill((255, 255, 255))
+    # window.fill((255, 255, 255))
     # Dessiner le canvas
     # Create a pygame surface from canvasToSave canvas
-    #canvasToSave [:] = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+    canvasToSave[:] = random.randint(0, 255), random.randint(
+        0, 255), random.randint(0, 255)
     canvasToSaveSurface = pygame.surfarray.make_surface(canvasToSave)
 
     window.blit(canvasToSaveSurface, (0, 0))

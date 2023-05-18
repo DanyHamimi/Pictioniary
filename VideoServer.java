@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class VideoServer {
     private static final int PORT = 8080;
     private static final int MAX_GAMES = 8;
@@ -15,38 +18,39 @@ public class VideoServer {
     private static final int SCORE_TO_WIN = 3;
 
     private static final ConcurrentHashMap<Integer, Game> games = new ConcurrentHashMap<>();
+    private static final Lock gamesLock = new ReentrantLock();
 
     public static void deleteGamesWithIsGameFinished() {
         List<Integer> keysToRemove = new ArrayList<>();
-        
+
         for (Integer key : games.keySet()) {
             if (games.get(key).isGameFinished == 1) {
                 keysToRemove.add(key);
                 System.out.println("Partie supprimée " + key);
             }
         }
-        
+
         for (Integer key : keysToRemove) {
             games.remove(key);
             NB_ACTUAL_GAMES--;
         }
-        
+
         // Décaler les indices pour qu'il n'y ait pas de trou
         ConcurrentHashMap<Integer, Game> updatedGames = new ConcurrentHashMap<>();
         int newIndex = 0;
-        
+
         for (Integer key : games.keySet()) {
             updatedGames.put(newIndex, games.get(key));
             newIndex++;
         }
-        
+
         games.clear();
         games.putAll(updatedGames);
     }
-    
+
     public static void main(String[] args) throws IOException {
-        for(int i = 0;i<1;i++){
-            games.put(i, new Game(Game.GameType.PICTIONARY,"Default",4));
+        for (int i = 0; i < 1; i++) {
+            games.put(i, new Game(Game.GameType.PICTIONARY, "Default", 4));
             NB_ACTUAL_GAMES++;   //On fait une game défaut
         }
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -63,6 +67,7 @@ public class VideoServer {
         public enum GameType {
             MATHEMATIQUES, MOTS, PICTIONARY
         }
+
         private int isGameFinished = 0;
         private String name;
         private GameType gameType;
@@ -73,6 +78,8 @@ public class VideoServer {
         ConcurrentHashMap<Socket, Integer> clientIndices = new ConcurrentHashMap<>(); // Store the indices for each client
         String valToFind = "1";
         ConcurrentHashMap<Socket, Integer> scores = new ConcurrentHashMap<>();
+        private final Lock gameLock = new ReentrantLock();
+
         public Game(GameType gameType, String name, int maxplayergame) {
             this.gameType = gameType;
             this.name = name;
@@ -86,9 +93,11 @@ public class VideoServer {
             }
             updateValToFind();
         }
+
         public String getType() {
             return gameType.toString();
         }
+
         public String getName() {
             return name;
         }
@@ -136,6 +145,7 @@ public class VideoServer {
 
             return result + ";" + num2 + operator + num1;
         }
+
         public void updateValToFind() {
             switch (gameType) {
                 case MATHEMATIQUES:
@@ -155,7 +165,7 @@ public class VideoServer {
                 }
             }
             if (isGameFinished == 1) {
-                if(this.clients.size()>0){
+                if (this.clients.size() > 0) {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
@@ -199,59 +209,75 @@ public class VideoServer {
 
                 // Si le message est "defaultUser", renvoyez "salut" et terminez le thread
                 if ("hello".equalsIgnoreCase(receivedMessage)) {
-                    //Print all the games and their number of players
+                    // Print all the games and their number of players
                     String gamesString = "";
                     for (int i = 0; i < MAX_GAMES; i++) {
-                        if(games.get(i)!=null){
-                            gamesString += games.get(i).name + " : " + games.get(i).clients.size() + "/" + games.get(i).maxplayergame + " "+games.get(i).getType() +  ";";
+                        if (games.get(i) != null) {
+                            gamesString += games.get(i).name + " : " + games.get(i).clients.size() + "/" + games.get(i).maxplayergame + " " + games.get(i).getType() + ";";
                         }
                     }
                     outputWriter.println(gamesString);
                     clientSocket.close();
-                }
-                else if ("createserver".equalsIgnoreCase(receivedMessage.split(";")[0])){
-                    //msg with have the form "createserver;gameType;gameName;slots"
+                } else if ("createserver".equalsIgnoreCase(receivedMessage.split(";")[0])) {
+                    // msg with have the form "createserver;gameType;gameName;slots"
                     String gameType = receivedMessage.split(";")[1].toUpperCase();
                     String gameName = receivedMessage.split(";")[2];
                     int slots = Integer.parseInt(receivedMessage.split(";")[3]);
-                    Game game = new Game(Game.GameType.valueOf(gameType), gameName, slots);
-                    games.put(NB_ACTUAL_GAMES, game);
-                    NB_ACTUAL_GAMES++;
-                    String gamesString = "";
-                    for (int i = 0; i < NB_ACTUAL_GAMES; i++) {
-                        gamesString += games.get(i).name + " : " + games.get(i).clients.size() + "/" + games.get(i).maxplayergame + " "+games.get(i).getType() +  ";";
+
+                    gamesLock.lock();
+                    try {
+                        Game game = new Game(Game.GameType.valueOf(gameType), gameName, slots);
+                        games.put(NB_ACTUAL_GAMES, game);
+                        NB_ACTUAL_GAMES++;
+                    } finally {
+                        gamesLock.unlock();
                     }
+
+                    String gamesString = "";
+                    gamesLock.lock();
+                    try {
+                        for (int i = 0; i < NB_ACTUAL_GAMES; i++) {
+                            gamesString += games.get(i).name + " : " + games.get(i).clients.size() + "/" + games.get(i).maxplayergame + " " + games.get(i).getType() + ";";
+                        }
+                    } finally {
+                        gamesLock.unlock();
+                    }
+
                     outputWriter.println(gamesString);
                     clientSocket.close();
-                }
-                else{
+                } else {
                     username = receivedMessage.split(";")[0];
                     idServer = Integer.parseInt(receivedMessage.split(";")[1]);
 
-                    Game game = games.get(idServer);
+                    gamesLock.lock();
+                    try {
+                        Game game = games.get(idServer);
 
+                        if (game.clients.size() < game.maxplayergame) {
+                            clientIndex = game.clients.size() + 1; // Assign the index for the client
+                            game.clients.put(clientSocket, outputStream);
+                            game.scores.put(clientSocket, 0);
+                            game.clientIndices.put(clientSocket, clientIndex); // Store the index for the client
+                            System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " ajouté à la partie " + idServer + " avec l'index " + clientIndex);
 
-                    if (game.clients.size() < game.maxplayergame) {
-                        clientIndex = game.clients.size() + 1; // Assign the index for the client
-                        game.clients.put(clientSocket, outputStream);
-                        game.scores.put(clientSocket, 0);
-                        game.clientIndices.put(clientSocket, clientIndex); // Store the index for the client
-                        System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " ajouté à la partie " + idServer + " avec l'index " + clientIndex);
+                            if (game.clients.size() == 1) {
+                                game.updateValToFind();
+                            }
 
-                        if (game.clients.size() == 1) {
-                            game.updateValToFind();
+                            for (DataOutputStream out : game.clients.values()) {
+                                out.writeInt(450);
+                                System.out.print("Valeur à trouver score update " + game.valToFind);
+                                String value = String.valueOf(game.valToFind);
+                                out.writeInt(value.length());
+                                out.write(value.getBytes(StandardCharsets.UTF_8));
+                            }
+                        } else {
+                            // Send to the client that the game is full
+                            outputStream.writeInt(400);
+                            throw new IOException("Partie pleine");
                         }
-                        for (DataOutputStream out : game.clients.values()) {
-                            out.writeInt(450);
-                            System.out.print("Valeur à trouver score update " + game.valToFind);
-                            String value = String.valueOf(game.valToFind);
-                            out.writeInt(value.length());
-                            out.write(value.getBytes(StandardCharsets.UTF_8));
-                        }
-                    } else {
-                        //Send to the client that the game is full
-                        outputStream.writeInt(400);
-                        throw new IOException("Partie pleine");
+                    } finally {
+                        gamesLock.unlock();
                     }
 
                     while (true) {
@@ -260,54 +286,68 @@ public class VideoServer {
                         if (length > 0) {
                             byte[] image = new byte[length];
                             inputStream.readFully(image, 0, length);
-                            //System.out.println("Image reçue");
-                            if (game.scores.get(clientSocket) != score) {
-                                game.scores.put(clientSocket, score);
-                                game.updateValToFind();
-                                for (DataOutputStream out : game.clients.values()) {
-                                    out.writeInt(500);
-                                    System.out.print("Valeur à trouver score update " + game.valToFind);
-                                    String value = String.valueOf(game.valToFind);
-                                    out.writeInt(value.length());
-                                    out.write(value.getBytes(StandardCharsets.UTF_8));
-                                }
+                            // System.out.println("Image reçue");
 
-                            }
+                            gamesLock.lock();
+                            try {
+                                Game game = games.values().stream().filter(g -> g.clients.containsKey(clientSocket)).findFirst().orElse(null);
 
-                            game.clients.entrySet().stream()
-                                    .filter(entry -> entry.getKey() != clientSocket)
-                                    .forEach(entry -> {
-                                        try {
-                                            //print the index of the client
-                                            System.out.println("Index "+ clientIndex);
-                                            entry.getValue().writeInt(2);
-                                            entry.getValue().writeInt(score);
-                                            entry.getValue().writeInt(clientIndex); // Send the index of the client
-                                            entry.getValue().writeInt(length);
-                                            entry.getValue().write(image);
-                                            String userToSend = username + "\0";
-                                            byte[] usernameBytes = userToSend.getBytes(StandardCharsets.UTF_8);
-                                            entry.getValue().writeInt(usernameBytes.length);
-                                            entry.getValue().write(usernameBytes);
-                                            //System.out.println("Envoie image venant de " + username + " à " + entry.getKey().getRemoteSocketAddress());
-                                        } catch (IOException e) {
-                                            System.out.println("ERREUR LORS DE L'ENVOI DU MESSAGE");
-                                            e.printStackTrace();
+                                if (game != null) {
+                                    if (game.scores.get(clientSocket) != score) {
+                                        game.scores.put(clientSocket, score);
+                                        game.updateValToFind();
+
+                                        for (DataOutputStream out : game.clients.values()) {
+                                            out.writeInt(500);
+                                            System.out.print("Valeur à trouver score update " + game.valToFind);
+                                            String value = String.valueOf(game.valToFind);
+                                            out.writeInt(value.length());
+                                            out.write(value.getBytes(StandardCharsets.UTF_8));
                                         }
-                                    });
+                                    }
+
+                                    game.clients.entrySet().stream()
+                                            .filter(entry -> entry.getKey() != clientSocket)
+                                            .forEach(entry -> {
+                                                try {
+                                                    // print the index of the client
+                                                    System.out.println("Index " + clientIndex);
+                                                    entry.getValue().writeInt(2);
+                                                    entry.getValue().writeInt(score);
+                                                    entry.getValue().writeInt(clientIndex); // Send the index of the client
+                                                    entry.getValue().writeInt(length);
+                                                    entry.getValue().write(image);
+                                                    String userToSend = username + "\0";
+                                                    byte[] usernameBytes = userToSend.getBytes(StandardCharsets.UTF_8);
+                                                    entry.getValue().writeInt(usernameBytes.length);
+                                                    entry.getValue().write(usernameBytes);
+                                                    // System.out.println("Envoie image venant de " + username + " à " + entry.getKey().getRemoteSocketAddress());
+                                                } catch (IOException e) {
+                                                    System.out.println("ERREUR LORS DE L'ENVOI DU MESSAGE");
+                                                    e.printStackTrace();
+                                                }
+                                            });
+                                }
+                            } finally {
+                                gamesLock.unlock();
+                            }
                         }
                     }
                 }
             } catch (IOException e) {
                 System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " s'est déconnecté");
             } finally {
-                Game game = games.values().stream().filter(g -> g.clients.containsKey(clientSocket)).findFirst().orElse(null);
+                gamesLock.lock();
+                try {
+                    Game game = games.values().stream().filter(g -> g.clients.containsKey(clientSocket)).findFirst().orElse(null);
 
-                if (game != null) {
-                    game.clients.remove(clientSocket);
-                    game.scores.remove(clientSocket);
-                    game.clientIndices.remove(clientSocket); // Remove the index for the client
-
+                    if (game != null) {
+                        game.clients.remove(clientSocket);
+                        game.scores.remove(clientSocket);
+                        game.clientIndices.remove(clientSocket); // Remove the index for the client
+                    }
+                } finally {
+                    gamesLock.unlock();
                 }
 
                 try {

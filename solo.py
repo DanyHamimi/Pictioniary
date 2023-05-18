@@ -175,7 +175,7 @@ def drawPlayerXcanvas(canvasRecived, id, scorep, usernamep):
     userNameWithoutSpace = usernamep.replace("\0", "")
     if int(AmountPlayer) > 2:
         canvasRecived = canvasRecived.resize((233, 240))
-        fontUser_Score = pygame.font.SysFont('freesansbold', 20)
+        fontUser_Score = pygame.font.SysFont('freesansbold', 25)
         try:
             print("ici")
             # Selon la postion de id dans le tableau on blit le canvas à un endroit différent
@@ -524,6 +524,7 @@ def mainSolo(isonline, gameType, idServ, ipServ, nbPlayers, username):
                         send_thread.join()
                         receive_thread.join()
                         stop_flag.clear()
+                        ListPlayers.clear()
                         return
                     window.fill((0, 0, 0))
                     pygame.display.update()
