@@ -6,7 +6,7 @@ import pygame
 
 
 has2Hands = False
-objet_names = ["POMME", "LIVRE", "ECLAIR", "SERPENT", "LA TOUR EIFFEL", "BANANE", "AVION", "SEAU", "ENVELOPPE", "CAROTTE", "HACHE", "REVEIL", "CHAT", "ENCUME", "FLEUR", "MAIN", "LUNETTES", "PAPILLON", "TRIANGLE", "SHORTS"]
+objet_names = ["POMME", "LIVRE", "ECLAIR", "SERPENT", "LA TOUR EIFFEL", "BANANE", "AVION", "SEAU", "ENVELOPPE", "CAROTTE", "HACHE", "REVEIL", "CHAT", "ENCLUME", "FLEUR", "MAIN", "LUNETTES", "PAPILLON", "TRIANGLE", "SHORTS"]
 
 
 valFinded = -2
@@ -75,20 +75,17 @@ def setNewValue(gameType,valToFind):
     textVars = ""
     if(gameType == "Pictionary"):
         textVars = "Dessin à faire : "
-        textVars2 = "Dessin trouvé : "
     elif(gameType == "Mots"):
         textVars = "Mot à écrire : "
-        textVars2 = "Derniere lettre écrite : "
     elif(gameType == "Mathématiques"):
         textVars = "Calcul à faire : "
-        textVars2 = "Résultat trouvé : "
     window.blit(buttonVal2Find, (750, 50))
     window.blit(buttonValFinded, (750, 150))
 
     textNb = fontsmaller.render(textVars + str(valToFind), True, (255, 255, 255))
     window.blit(textNb, (825, 65))
 
-    textVal = fontsmaller.render(textVars2 + str(0), True, (255, 255, 255))
+    textVal = fontsmaller.render("?", True, (255, 255, 255))
     window.blit(textVal, (825, 165))
 
 

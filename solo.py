@@ -5,12 +5,15 @@ import sys
 
 from realmain import *
 global score
-ValToFindReally = None
+valToFind = "0"
 scorePlayer2 = 0
 global send_thread
 global receive_thread
 fontMOT = pygame.font.Font('freesansbold.ttf', 60)
 stop_flag = threading.Event()
+isEndend = 0
+Online = 0
+typeGa = ""
 
 def setGameType(gameType):
     if(gameType == "Pictionary"):
@@ -44,6 +47,9 @@ def predictImage(typeGame):
     return valFinded
 
 def generateOtherValToFind(typeGame):
+    global Online
+    if Online != "Solo" :
+        return valToFind
     if(typeGame == "Pictionary"):
         #Pick a random word from objet_name array
         return random.choice(objet_names)
@@ -80,10 +86,8 @@ def generateOtherValToFind(typeGame):
         print("Calcul à résoudre : " + math_problem)
         return str(result)+ ";" + str(num1) + operator + str(num2)
 
-        #return predict_draw(preprocess_image("Imgs/canvas.jpg"), modelDraw)
 canvasPlayer2 = np.zeros((480, 640, 3), np.uint8)
 canvasPlayer2[:] = 255, 255, 255
-#Fill this canvas with the content of an
 player2Surface = pygame.surfarray.make_surface(canvasPlayer2)
 
 def display_current_word(word, letters_found):
@@ -94,13 +98,30 @@ def display_current_word(word, letters_found):
         else:
             displayed_word += " "
     return displayed_word
-        
+
+
+def updateNewOlineValue(newVal, typeGa):
+    global valToFind
+    if typeGa == "Mathématiques":
+        print("Math")
+        valToFindTMP = newVal
+        print(valToFindTMP)
+        valToFind = valToFindTMP.split(";")[0]
+        calculus = valToFindTMP.split(";")[1]
+        setNewValue(typeGa, calculus)
+    else:
+        valToFind = newVal
+        setNewValue(typeGa, valToFind)
+    canvasToSave[:] = 255, 255, 255
+    canvas[:] = 0, 0, 0
+
+
 def send_image(client_socket):
     global stop_flag
-    client_socket.settimeout(3.0)  # Set a timeout of 3 seconds
+    global isEndend
     while not stop_flag.is_set():
         try:
-            print("envoie")
+            #print("envoie")
             #Convert
             canvas_img = Image.fromarray(canvasToSave)
             canvas_img = canvas_img.crop((200, 50, 550, 400))
@@ -117,37 +138,32 @@ def send_image(client_socket):
             client_socket.sendall(size_bytes)
             client_socket.sendall(image_data)
 
-        except socket.timeout:
-            print("Timeout occurred")
-            break
-
-            #print(f'Image sent with size {size/1024} ko')
         except Exception as e:
+            isEndend = 1
+            sys.exit()
             break
         time.sleep(0.1)
 
 
     
 def receive_and_process_images(client_socket):
-    global ValToFindReally
+    global typeGa
+    global valToFind
     global inGame
     global scorePlayer2
     global stop_flag
-    client_socket.settimeout(3.0)  # Set a timeout of 3 seconds
+    global isEndend
     while not stop_flag.is_set():
-        print("recois")
+        print("recoit")
         try:
-            #print("je suis ici")
             int_data = client_socket.recv(4)
             if not int_data or len(int_data) < 4:
                 break
             int_val = struct.unpack(">I", int_data)[0]
-            #print("valeur recue" + str(int_val))
             if int_val != 500 and int_val != 450:
                 score_data = client_socket.recv(4)
                 if not score_data:
                     continue
-                #print("score recu" + str(score_data))
                 score = struct.unpack(">I", score_data)[0]
                 scorePlayer2 = score
                 print("score recu" + str(score))
@@ -178,43 +194,29 @@ def receive_and_process_images(client_socket):
                 if not username_data:
                     continue
                 username = username_data.decode()
-                #print("image recue")
             else:
-                #print("on rentre ici")
                 value_length_data = client_socket.recv(4)
                 if not value_length_data:
                     continue
                 value_length = struct.unpack(">I", value_length_data)[0]
 
                 newValue_data = b""
+                print("value_length", value_length)
                 while len(newValue_data) < value_length:
-                    received_data = client_socket.recv(
-                        min(value_length - len(newValue_data), 4096)
-                    )
-                    if not received_data:
-                        break
+                    received_data = client_socket.recv(min(value_length - len(newValue_data), 4096))
+                    if not received_data: break
                     newValue_data += received_data
-                if not newValue_data:
-                    continue
                 newValue = newValue_data.decode()
-                #print("newValue", newValue)
-                # window.blit(buttonVal2Find, (750, 50))
-                # if(newValue == 14):
-                # textNb = font.render("Attente", True, (255, 255, 255))
-                # ValToFindReally = -1
-                # else :
-                # textNb = font.render("Valeur à trouver : " + str(newValue), True, (255, 255, 255))
-                # ValToFindReally = newValue
+                valToFind = newValue.upper()
+                print("newValue", newValue)
+                updateNewOlineValue(newValue.upper(), typeGa)
+                
 
-                # window.blit(textNb, (825, 65))
-                ValToFindReally = newValue
 
-        except socket.timeout:
-            print("Timeout occurred")
-            break
 
         except Exception as e:
             print(e)
+            
             break
 
 
@@ -222,8 +224,14 @@ def mainSolo(isonline,gameType,idServ,ipServ):
     global score
     global valToFind
     global stop_flag
+    global isEndend
+    global Online 
+    global typeGa
+    typeGa = gameType
+    Online = isonline
+
+    
     score = 0
-    #Put a black image at the 
     valToFind = generateOtherValToFind(gameType)
     if(isonline != "Solo"):
 
@@ -260,12 +268,10 @@ def mainSolo(isonline,gameType,idServ,ipServ):
                 send_thread.start()
                 receive_thread.start()
             except socket.timeout:
-                #Stop all threads
                 pass
 
         except ConnectionRefusedError:
             print("Connexion refusée par le serveur")
-            # Gérer l'erreur de connexion refusée ici
             pass
 
     letters_found = set()
@@ -289,31 +295,21 @@ def mainSolo(isonline,gameType,idServ,ipServ):
     if(isonline == "Solo"):
         start_time = time.time()
         clock = pygame.time.Clock()
-    #Check if ValToFindReally exist as a variable
     while True:
-        #print(scorePlayer2)``
 
         if isonline == "Online":
-            if scorePlayer2 == 1 or score == 1:
+            if isEndend == 1:
+                isEndend = 0
                 print("Player 2 win")
                 stop_flag.set()
                 send_thread.join()
                 receive_thread.join()
                 client_socket.close()
                 print("ciao")
+                stop_flag.clear()
                 break
 
-            if (ValToFindReally != None and ValToFindReally != valToFind):
-                if(gameType == "Mathématiques"):
-                    if(ValToFindReally.split(";")[0] == valToFind):
-                        setNewValue(gameType,valToFind.split(";")[1])
-                        valToFind = valToFind.split(";")[0]
-                else:
-                    valToFind = ValToFindReally.upper()
-                    setNewValue(gameType,valToFind)
-            #if(ValToFindReally != valToFind):
-                #valToFind = newValToFind
-                #setNewValue(gameType,valToFind)
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
                         print("photo")
@@ -339,12 +335,14 @@ def mainSolo(isonline,gameType,idServ,ipServ):
                             if str(valToFind) == str(valFinded):
                                 print("trouvé")
                                 score += 1
-                                if(gameType == "Mathématiques"):
+                                if(gameType == "Mathématiques" and isonline == "Solo"):
+                                    print("Math")
                                     valToFindTMP = generateOtherValToFind(gameType)
+                                    print(valToFindTMP)
                                     valToFind = valToFindTMP.split(";")[0]
                                     calculus = valToFindTMP.split(";")[1]
                                     setNewValue(gameType,calculus)
-                                else:
+                                elif(isonline == "Solo"):
                                     valToFind = generateOtherValToFind(gameType)
                                     setNewValue(gameType,valToFind)
                                 canvasToSave[:] = 255, 255, 255
