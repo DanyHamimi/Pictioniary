@@ -531,7 +531,7 @@ def mainSolo(isonline, gameType, idServ, ipServ, nbPlayers, username):
                     return
         if (isonline == "Solo"):
             elapsed_time = time.time() - start_time
-            remaining_time = max(0, 25 - elapsed_time)
+            remaining_time = max(0, 90 - elapsed_time)
             minutes = int(remaining_time / 60)
             seconds = int(remaining_time % 60)
             timer_text = f"{minutes:02d}:{seconds:02d}"
