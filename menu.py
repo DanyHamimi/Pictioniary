@@ -21,7 +21,9 @@ server_button_join_height = 50
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-def show_servers_prerequest(ip,stringToSend):
+
+
+def show_servers_prerequest(ip, stringToSend):
     print("L'adresse IP saisie est :", ip)
     SERVER_HOST = ip
     SERVER_PORT = 8080
@@ -46,9 +48,11 @@ def show_servers_prerequest(ip,stringToSend):
         print(e)
         print("Impossible de se connecter au serveur. Retour au menu principal.")
 
+
 def ask_for_ip(window):
     font = pygame.font.SysFont("Arial", 30)
-    input_box = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 20, 200, 40)
+    input_box = pygame.Rect(SCREEN_WIDTH // 2 - 100,
+                            SCREEN_HEIGHT // 2 - 20, 200, 40)
     text = ''
     active = False
     done = False
@@ -80,12 +84,16 @@ def ask_for_ip(window):
         window.blit(txt_surface, (input_box.x+5, input_box.y+5))
         pygame.draw.rect(window, (255, 255, 255), input_box, 2)
 
-        prompt = font.render("Veuillez entrer une adresse IP :", True, (255, 255, 255))
-        window.blit(prompt, (SCREEN_WIDTH // 2 - prompt.get_width() // 2, SCREEN_HEIGHT // 2 - 80))
+        prompt = font.render(
+            "Veuillez entrer une adresse IP :", True, (255, 255, 255))
+        window.blit(prompt, (SCREEN_WIDTH // 2 -
+                    prompt.get_width() // 2, SCREEN_HEIGHT // 2 - 80))
 
         pygame.display.update()
 
     return text
+
+
 def show_game_modes(window):
     font = pygame.font.SysFont("Arial", 30)
 
@@ -109,7 +117,8 @@ def show_game_modes(window):
     back_button_height = 50
     back_button_x = 50
     back_button_y = 50
-    back_button = pygame.Rect(back_button_x, back_button_y, back_button_width, back_button_height)
+    back_button = pygame.Rect(
+        back_button_x, back_button_y, back_button_width, back_button_height)
 
     running = True
     while running:
@@ -124,23 +133,26 @@ def show_game_modes(window):
                     print("Le bouton Précédent a été cliqué !")
                     window.fill((0, 0, 0))
                     pygame.display.update()
-                    return 
+                    return
 
                 for i, (button, _) in enumerate(game_mode_buttons):
                     if button.collidepoint(mouse_pos):
-                        print(f"Le mode de jeu {game_modes[i]} a été sélectionné !")
+                        print(
+                            f"Le mode de jeu {game_modes[i]} a été sélectionné !")
                         window.fill((0, 0, 0))
                         pygame.display.update()
-                        mainSolo("Solo",game_modes[i],-1,0,1,"user")
+                        mainSolo("Solo", game_modes[i], -1, 0, 1, "user")
 
         window.blit(background, (0, 0))
 
         pygame.draw.rect(window, (255, 255, 255), back_button, 3)
-        window.blit(back_text, (back_button.x + (back_button.width - back_text.get_width()) // 2, back_button.y + (back_button.height - back_text.get_height()) // 2))
+        window.blit(back_text, (back_button.x + (back_button.width - back_text.get_width()) //
+                    2, back_button.y + (back_button.height - back_text.get_height()) // 2))
 
         for button, text in game_mode_buttons:
             pygame.draw.rect(window, (255, 255, 255), button, 3)
-            window.blit(text, (button.x + (button.width - text.get_width()) // 2, button.y + (button.height - text.get_height()) // 2))
+            window.blit(text, (button.x + (button.width - text.get_width()) //
+                        2, button.y + (button.height - text.get_height()) // 2))
 
         pygame.display.update()
 
@@ -190,7 +202,8 @@ def show_servers(window, welcomemsg, ipserv):
     font = pygame.font.SysFont("Arial", 30)
 
     # Titre "LISTE DES PARTIES"
-    title_font = pygame.font.SysFont("Arial", 40, True)  # Police en gras avec une taille de 40
+    # Police en gras avec une taille de 40
+    title_font = pygame.font.SysFont("Arial", 40, True)
     title_text = title_font.render("LISTE DES PARTIES", True, (255, 255, 255))
     title_x = (window.get_width() - title_text.get_width()) // 2
     title_y = 50
@@ -207,18 +220,21 @@ def show_servers(window, welcomemsg, ipserv):
     tableauMsgs.pop()
     row = 0
     for index, msg in enumerate(tableauMsgs):
-        server_button_y = server_button_start_y + (index % 4) * server_button_spacing
+        server_button_y = server_button_start_y + \
+            (index % 4) * server_button_spacing
         if index % 4 == 0:
             row += 1
         button_x = 150 + (row - 1) * (server_button_width + 350)
         nameServer = msg.split(" ")[0]
         amountPlayers = msg.split(" ")[2]
         typeGame = msg.split(" ")[3]
-        server_button = pygame.Rect(button_x, server_button_y, server_button_width, server_button_height)
+        server_button = pygame.Rect(
+            button_x, server_button_y, server_button_width, server_button_height)
 
         server_text = font.render(nameServer, True, (255, 255, 255))
         join_text = font.render(amountPlayers, True, (255, 255, 255))
-        join_button = pygame.Rect(button_x + server_button_width + 50, server_button_y + (server_button_height - server_button_join_height) // 2, server_button_join_width, server_button_join_height)
+        join_button = pygame.Rect(button_x + server_button_width + 50, server_button_y + (
+            server_button_height - server_button_join_height) // 2, server_button_join_width, server_button_join_height)
 
         server_buttons.append((server_button, server_text))
         join_buttons.append((join_button, join_text))
@@ -228,14 +244,16 @@ def show_servers(window, welcomemsg, ipserv):
     back_button_height = 50
     back_button_x = 50
     back_button_y = 50
-    back_button = pygame.Rect(back_button_x, back_button_y, back_button_width, back_button_height)
+    back_button = pygame.Rect(
+        back_button_x, back_button_y, back_button_width, back_button_height)
 
     reload_text = font.render("Recharger", True, (255, 255, 255))
     reload_button_width = 160
     reload_button_height = 50
     reload_button_x = 1100
     reload_button_y = 50
-    reload_button = pygame.Rect(reload_button_x, reload_button_y, reload_button_width, reload_button_height)
+    reload_button = pygame.Rect(
+        reload_button_x, reload_button_y, reload_button_width, reload_button_height)
 
     create_server_text = font.render("Créer une partie", True, (255, 255, 255))
     create_server_button_width = 240
@@ -262,7 +280,7 @@ def show_servers(window, welcomemsg, ipserv):
                     print("Le bouton Reload a été cliqué !")
                     window.fill((0, 0, 0))
                     pygame.display.update()
-                    show_servers_prerequest(ip, "hello")
+                    show_servers_prerequest(ip, "askserverforplayers")
                     return
 
                 if create_server_button.collidepoint(mouse_pos):
@@ -274,24 +292,27 @@ def show_servers(window, welcomemsg, ipserv):
 
                 for i, (join_button, _) in enumerate(join_buttons):
                     if join_button.collidepoint(mouse_pos):
-                        print(f"Le bouton Rejoindre du serveur {i + 1} a été cliqué !")
+                        print(
+                            f"Le bouton Rejoindre du serveur {i + 1} a été cliqué !")
                         window.fill((0, 0, 0))
                         pygame.display.update()
                         typeGame = tableauMsgs[i].split(" ")[3].capitalize()
                         if typeGame == "Mathematiques":
                             typeGame = "Mathématiques"
-                        max_players = (tableauMsgs[i].split(" ")[2]).split("/")[1]
-                        if(username == ""):
+                        max_players = (tableauMsgs[i].split(" ")[
+                                       2]).split("/")[1]
+                        if (username == ""):
                             username = "user"
-                        mainSolo("Online", typeGame, i, ipserv, max_players,username)
-                        show_servers_prerequest(ip, "hello")
+                        mainSolo("Online", typeGame, i,
+                                 ipserv, max_players, username)
+                        show_servers_prerequest(ip, "askserverforplayers")
                         return
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     # Action à effectuer lorsque la touche "Retour arrière" est enfoncée
-                    username = username[:-1] 
-                    username_text = username  
+                    username = username[:-1]
+                    username_text = username
                 else:
                     username += event.unicode
 
@@ -304,27 +325,35 @@ def show_servers(window, welcomemsg, ipserv):
 
         # Affichage du champ d'entrée du nom d'utilisateur
         pygame.draw.rect(window, (255, 255, 255), username_input_rect, 3)
-        window.blit(username_label, (username_input_rect.x - 120, username_input_rect.y + 10))
+        window.blit(username_label, (username_input_rect.x -
+                    120, username_input_rect.y + 10))
         username_input_text = font.render(username_text, True, (255, 255, 255))
-        window.blit(username_input_text, (username_input_rect.x + 10, username_input_rect.y + 10))
+        window.blit(username_input_text, (username_input_rect.x +
+                    10, username_input_rect.y + 10))
 
         pygame.draw.rect(window, (255, 255, 255), back_button, 3)
-        window.blit(back_text, (back_button.x + (back_button.width - back_text.get_width()) // 2, back_button.y + (back_button.height - back_text.get_height()) // 2))
+        window.blit(back_text, (back_button.x + (back_button.width - back_text.get_width()) //
+                    2, back_button.y + (back_button.height - back_text.get_height()) // 2))
 
-        create_server_button = pygame.Rect(create_server_button_x, create_server_button_y, create_server_button_width, create_server_button_height)
+        create_server_button = pygame.Rect(
+            create_server_button_x, create_server_button_y, create_server_button_width, create_server_button_height)
         pygame.draw.rect(window, (255, 255, 255), create_server_button, 3)
-        window.blit(create_server_text, (create_server_button.x + (create_server_button.width - create_server_text.get_width()) // 2, create_server_button.y + (create_server_button.height - create_server_text.get_height()) // 2))
+        window.blit(create_server_text, (create_server_button.x + (create_server_button.width - create_server_text.get_width()
+                                                                   ) // 2, create_server_button.y + (create_server_button.height - create_server_text.get_height()) // 2))
 
         pygame.draw.rect(window, (255, 255, 255), reload_button, 3)
-        window.blit(reload_text, (reload_button.x + (reload_button.width - reload_text.get_width()) // 2, reload_button.y + (reload_button.height - reload_text.get_height()) // 2))
+        window.blit(reload_text, (reload_button.x + (reload_button.width - reload_text.get_width()) //
+                    2, reload_button.y + (reload_button.height - reload_text.get_height()) // 2))
 
         for server_button, server_text in server_buttons:
             pygame.draw.rect(window, (255, 255, 255), server_button, 3)
-            window.blit(server_text, (server_button.x + (server_button.width - server_text.get_width()) // 2, server_button.y + (server_button.height - server_text.get_height()) // 2))
+            window.blit(server_text, (server_button.x + (server_button.width - server_text.get_width()) //
+                        2, server_button.y + (server_button.height - server_text.get_height()) // 2))
 
         for join_button, join_text in join_buttons:
             pygame.draw.rect(window, (255, 255, 255), join_button, 3)
-            window.blit(join_text, (join_button.x + (join_button.width - join_text.get_width()) // 2, join_button.y + (join_button.height - join_text.get_height()) // 2))
+            window.blit(join_text, (join_button.x + (join_button.width - join_text.get_width()) //
+                        2, join_button.y + (join_button.height - join_text.get_height()) // 2))
 
         pygame.display.update()
 
@@ -351,10 +380,12 @@ def create_server(window):
 
     for i, field in enumerate(fields):
         label = font.render(field + " :", True, (255, 255, 255))
-        label_rect = label.get_rect(x=label_x, y=220 + i * 100, width=label_width, height=label_height)
+        label_rect = label.get_rect(
+            x=label_x, y=220 + i * 100, width=label_width, height=label_height)
         labels.append((label, label_rect))
 
-        input_box = pygame.Rect(input_box_x, 220 + i * 100, input_box_width, input_box_height)
+        input_box = pygame.Rect(input_box_x, 220 + i *
+                                100, input_box_width, input_box_height)
         input_boxes.append(input_box)
 
     confirm_text = font.render("Confirmer", True, (255, 255, 255))
@@ -372,7 +403,8 @@ def create_server(window):
 
     for i, label in enumerate(radio_labels):
         radio_button_y = 300 + i * (radio_button_height + radio_button_spacing)
-        radio_button = pygame.Rect(radio_button_x, radio_button_y, radio_button_width, radio_button_height)
+        radio_button = pygame.Rect(
+            radio_button_x, radio_button_y, radio_button_width, radio_button_height)
         radio_buttons.append((radio_button, label))
 
     mode_buttons = []
@@ -384,7 +416,8 @@ def create_server(window):
 
     for i, label in enumerate(mode_labels):
         mode_button_y = 300 + i * (mode_button_height + mode_button_spacing)
-        mode_button = pygame.Rect(mode_button_x, mode_button_y, mode_button_width, mode_button_height)
+        mode_button = pygame.Rect(
+            mode_button_x, mode_button_y, mode_button_width, mode_button_height)
         mode_buttons.append((mode_button, label))
 
     selected_player_count = 2
@@ -401,15 +434,14 @@ def create_server(window):
 
                 if confirm_button.collidepoint(mouse_pos):
                     if all(inputs):
-                        
+
                         game_type = selected_mode.lower()
                         game_name = inputs[0]
                         slots = str(selected_player_count)
                         request_string = f"createserver;{game_type};{game_name};{slots}"
 
                         show_servers_prerequest(ip, request_string)
-                        return 
-                            
+                        return
 
                 elif cancel_button.collidepoint(mouse_pos):
                     print("Le bouton Annuler a été cliqué !")
@@ -440,8 +472,8 @@ def create_server(window):
                             input_text = input_text[:-1]
                             inputs[i] = input_text
                         else:
-                            if(len(input_text) < 10):
-                                if(event.unicode in string.ascii_letters or event.unicode in string.digits):
+                            if (len(input_text) < 10):
+                                if (event.unicode in string.ascii_letters or event.unicode in string.digits):
                                     input_text += event.unicode
                                     inputs[i] = input_text
 
@@ -458,10 +490,12 @@ def create_server(window):
             window.blit(input_surface, (input_box.x + 5, input_box.y + 5))
 
         pygame.draw.rect(window, (255, 255, 255), confirm_button, 3)
-        window.blit(confirm_text, (confirm_button.x + (confirm_button.width - confirm_text.get_width()) // 2, confirm_button.y + (confirm_button.height - confirm_text.get_height()) // 2))
+        window.blit(confirm_text, (confirm_button.x + (confirm_button.width - confirm_text.get_width()) //
+                    2, confirm_button.y + (confirm_button.height - confirm_text.get_height()) // 2))
 
         pygame.draw.rect(window, (255, 255, 255), cancel_button, 3)
-        window.blit(cancel_text, (cancel_button.x + (cancel_button.width - cancel_text.get_width()) // 2, cancel_button.y + (cancel_button.height - cancel_text.get_height()) // 2))
+        window.blit(cancel_text, (cancel_button.x + (cancel_button.width - cancel_text.get_width()) //
+                    2, cancel_button.y + (cancel_button.height - cancel_text.get_height()) // 2))
 
         for radio_button, label in radio_buttons:
             if int(label.split()[0]) == selected_player_count:
@@ -469,7 +503,8 @@ def create_server(window):
             else:
                 pygame.draw.rect(window, (150, 150, 150), radio_button, 3)
             radio_text = font.render(label, True, (255, 255, 255))
-            radio_text_rect = radio_text.get_rect(center=(radio_button.x + radio_button.width // 2, radio_button.y + radio_button.height // 2))
+            radio_text_rect = radio_text.get_rect(center=(
+                radio_button.x + radio_button.width // 2, radio_button.y + radio_button.height // 2))
             window.blit(radio_text, radio_text_rect)
 
         for mode_button, label in mode_buttons:
@@ -478,7 +513,8 @@ def create_server(window):
             else:
                 pygame.draw.rect(window, (150, 150, 150), mode_button, 3)
             mode_text = font.render(label, True, (255, 255, 255))
-            mode_text_rect = mode_text.get_rect(center=(mode_button.x + mode_button.width // 2, mode_button.y + mode_button.height // 2))
+            mode_text_rect = mode_text.get_rect(center=(
+                mode_button.x + mode_button.width // 2, mode_button.y + mode_button.height // 2))
             window.blit(mode_text, mode_text_rect)
 
         pygame.display.update()
@@ -496,8 +532,8 @@ while True:
                 window.fill((0, 0, 0))
                 pygame.display.update()
                 ip = ask_for_ip(window)
-                show_servers_prerequest(ip,"hello")
-                
+                show_servers_prerequest(ip, "askserverforplayers")
+
             elif buttonQuit_x <= mouse_pos[0] <= buttonQuit_x + buttonQuit_width and buttonQuit_y <= mouse_pos[1] <= buttonQuit_y + buttonQuit_height:
                 print("Le bouton Quit a été cliqué !")
                 pygame.quit()
@@ -507,7 +543,6 @@ while True:
                 window.fill((0, 0, 0))
                 pygame.display.update()
                 show_game_modes(window)
-
 
     time = pygame.time.get_ticks() / 1000.0
     logo_y_offset = math.sin(time * 3) * 20
@@ -523,6 +558,3 @@ while True:
     window.blit(buttonQuit, (buttonQuit_x, buttonQuit_y))
 
     pygame.display.update()
-    
-
-    

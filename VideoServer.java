@@ -19,6 +19,7 @@ public class VideoServer {
 
     private static final ConcurrentHashMap<Integer, Game> games = new ConcurrentHashMap<>();
     private static final Lock gamesLock = new ReentrantLock();
+    private static ArrayList<Integer> disconnectedIndices = new ArrayList<>();
 
     public static void deleteGamesWithIsGameFinished() {
         List<Integer> keysToRemove = new ArrayList<>();
@@ -208,7 +209,7 @@ public class VideoServer {
                 System.out.println("Received message: " + receivedMessage);
 
                 // Si le message est "defaultUser", renvoyez "salut" et terminez le thread
-                if ("hello".equalsIgnoreCase(receivedMessage)) {
+                if ("askserverforplayers".equalsIgnoreCase(receivedMessage)) {
                     // Print all the games and their number of players
                     String gamesString = "";
                     for (int i = 0; i < MAX_GAMES; i++) {
@@ -254,10 +255,16 @@ public class VideoServer {
                         Game game = games.get(idServer);
 
                         if (game.clients.size() < game.maxplayergame) {
-                            clientIndex = game.clients.size() + 1; // Assign the index for the client
+                            if (!disconnectedIndices.isEmpty()) {
+                                clientIndex = disconnectedIndices.remove(0);
+                                System.out.println("Indice récupéré : " + clientIndex);
+                            } else {
+                                clientIndex = game.clients.size() + 1; // Assign the index for the client
+                            }
+
                             game.clients.put(clientSocket, outputStream);
                             game.scores.put(clientSocket, 0);
-                            game.clientIndices.put(clientSocket, clientIndex); // Store the index for the client
+                            game.clientIndices.put(clientSocket, clientIndex);
                             System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " ajouté à la partie " + idServer + " avec l'index " + clientIndex);
 
                             if (game.clients.size() == 1) {
@@ -286,7 +293,6 @@ public class VideoServer {
                         if (length > 0) {
                             byte[] image = new byte[length];
                             inputStream.readFully(image, 0, length);
-                            // System.out.println("Image reçue");
 
                             gamesLock.lock();
                             try {
@@ -310,18 +316,15 @@ public class VideoServer {
                                             .filter(entry -> entry.getKey() != clientSocket)
                                             .forEach(entry -> {
                                                 try {
-                                                    // print the index of the client
-                                                    System.out.println("Index " + clientIndex);
                                                     entry.getValue().writeInt(2);
                                                     entry.getValue().writeInt(score);
-                                                    entry.getValue().writeInt(clientIndex); // Send the index of the client
+                                                    entry.getValue().writeInt(clientIndex);
                                                     entry.getValue().writeInt(length);
                                                     entry.getValue().write(image);
                                                     String userToSend = username + "\0";
                                                     byte[] usernameBytes = userToSend.getBytes(StandardCharsets.UTF_8);
                                                     entry.getValue().writeInt(usernameBytes.length);
                                                     entry.getValue().write(usernameBytes);
-                                                    // System.out.println("Envoie image venant de " + username + " à " + entry.getKey().getRemoteSocketAddress());
                                                 } catch (IOException e) {
                                                     System.out.println("ERREUR LORS DE L'ENVOI DU MESSAGE");
                                                     e.printStackTrace();
@@ -344,7 +347,9 @@ public class VideoServer {
                     if (game != null) {
                         game.clients.remove(clientSocket);
                         game.scores.remove(clientSocket);
-                        game.clientIndices.remove(clientSocket); // Remove the index for the client
+                        disconnectedIndices.add(game.clientIndices.get(clientSocket));
+                        System.out.println("Indice " + game.clientIndices.get(clientSocket) + " removed");
+                        game.clientIndices.remove(clientSocket);
                     }
                 } finally {
                     gamesLock.unlock();
