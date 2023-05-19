@@ -28,6 +28,7 @@ def show_servers_prerequest(ip, stringToSend):
     SERVER_HOST = ip
     SERVER_PORT = 8080
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.settimeout(4)
     try:
         client_socket.connect((SERVER_HOST, SERVER_PORT))
         valueWelcome = stringToSend
