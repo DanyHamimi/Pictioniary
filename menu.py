@@ -3,7 +3,6 @@ import struct
 import pygame
 import math
 import socket
-from Main import main
 from config import *
 from utils import *
 from solo import mainSolo

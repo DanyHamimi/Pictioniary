@@ -2,8 +2,16 @@ import random
 import string
 import re
 import sys
+import os
+import io
+import socket
+import struct
+import time
+import threading
 
-from realmain import *
+
+from utils import *
+
 has2Hands = False
 global score
 valToFind = "0"
