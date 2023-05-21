@@ -39,8 +39,11 @@ ingame = None
 has2Hands = False
 
 # Liste des noms d'objets pour le jeu Pictionary
-objet_names = ["POMME", "ECLAIR", "SERPENT", "LA TOUR EIFFEL", "BANANE", "AVION", "SEAU", "ENVELOPPE", "CAROTTE",
-               "HACHE", "REVEIL", "RAISINS", "CHAT", "ENCLUME", "FLEUR", "MAIN", "LUNETTES", "PAPILLON", "TRIANGLE", "SHORT"]
+objet_names = [
+    "POMME", "ECLAIR", "AVION", "SEAU", "CHAPEAU", "ENVELOPPE", "CAROTTE", "HACHE",
+    "CUILLERE", "CHAT", "PORTE", "ENCLUME", "FLEUR", "BUS", "MAIN", "POISSON", "LUNETTES", "PAPILLON",
+    "NUAGE", "TRIANGLE", "SHORTS"
+]
 
 # Valeur trouvée lors du jeu
 valFinded = -2

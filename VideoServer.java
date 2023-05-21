@@ -79,9 +79,9 @@ public class VideoServer {
         private final int maxplayergame; // Nombre maximum de joueurs dans la partie de jeu
         private List<String> mots; // Liste de mots pour le jeu "Mots"
         private List<String> pictionaryWords = Arrays.asList(
-            "POMME", "ECLAIR", "SERPENT", "LA TOUR EIFFEL", "BANANE", "AVION",
-            "SEAU", "ENVELOPPE", "CAROTTE", "HACHE", "REVEIL", "RAISINS", "CHAT",
-            "ENCLUME", "FLEUR", "MAIN", "LUNETTES", "PAPILLON", "TRIANGLE", "SHORT"
+                "POMME", "ECLAIR", "AVION", "SEAU", "CHAPEAU", "ENVELOPPE", "CAROTTE", "HACHE",
+                "CUILLERE", "CHAT", "PORTE", "ENCLUME", "FLEUR", "BUS", "MAIN", "POISSON", "LUNETTES", "PAPILLON",
+                "NUAGE", "TRIANGLE", "SHORTS"
         ); // Liste de mots pour le jeu "Pictionary"
         ConcurrentHashMap<Socket, DataOutputStream> clients = new ConcurrentHashMap<>(); // Clients connectés à la partie de jeu
         ConcurrentHashMap<Socket, Integer> clientIndices = new ConcurrentHashMap<>(); // Indices des clients dans la partie de jeu

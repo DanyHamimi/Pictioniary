@@ -119,10 +119,6 @@ def index_to_letter(index):
     return letter
 
 
-objet_names = ["POMME", "ECLAIR", "SERPENT", "LA TOUR EIFFEL", "BANANE", "AVION", "SEAU", "ENVELOPPE", "CAROTTE",
-               "HACHE", "REVEIL", "RAISINS", "CHAT", "ENCLUME", "FLEUR", "MAIN", "LUNETTES", "PAPILLON", "TRIANGLE", "SHORT"]
-
-
 def predict(image_array, model, predict_type):
     """
         Fonction pour prédire une image selon le modèle utilisé.

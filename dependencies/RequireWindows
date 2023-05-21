@@ -1,0 +1,5 @@
+install numpy
+install opencv-python
+install mediapipe
+install pygame
+install tensorflow

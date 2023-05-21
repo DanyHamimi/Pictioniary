@@ -523,6 +523,7 @@ def mainGame(isonline, gameType, idServ, ipServ, nbPlayers, username):
             tmpcordY = -1
         img = cv2.flip(img, 1)
         # cv2.imshow("Image", img)
+
         cv2.addWeighted(canvas, 1, img, 1, 1, img)
         # cv2.imshow("Image", img)
         cv2.waitKey(1)
