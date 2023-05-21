@@ -3,6 +3,14 @@ import mediapipe as mp
 import numpy as np
 import tensorflow as tf
 import pygame
+import threading
+import random
+import sys
+import io
+import socket
+import time
+import struct
+
 
 # Charger l'image de fond
 background = pygame.image.load("Imgs/testfond.png")
@@ -117,6 +125,38 @@ butTimerBis = pygame.image.load("Imgs/testbuttondany.png")
 buttonVal2Find = pygame.transform.scale(but2FindBis, (500, 70))
 buttonValFinded = pygame.transform.scale(butFindedBis, (500, 70))
 butTimer = pygame.transform.scale(butTimerBis, (200, 80))
+
+
+has2Hands = False  # Indique si deux mains sont détectées
+global score  # Score du joueur
+valToFind = "0"  # Valeur à trouver (mot, résultat mathématique, etc.)
+AmountPlayer = 0  # Nombre de joueurs
+# Modèle à utiliser pour la prédiction (Pictionary, Mots, Mathématiques)
+currentModel = None
+current_letter_index = None  # Index de la lettre actuelle trouvée dans le mot
+letters_found = None  # Lettres déjà trouvées dans le mot
+
+ListPlayers = []  # Liste des identifiants des joueurs
+
+# Police pour l'affichage du mot à trouver
+fontMOT = pygame.font.Font('freesansbold.ttf', 60)
+stop_flag = threading.Event()  # Drapeau pour arrêter les threads
+isEndend = 0  # Indique si la partie est terminée
+Online = 0  # Indique si le jeu est en ligne (0 = hors ligne, 1 = en ligne)
+typeGa = ""  # Type de jeu ("Pictionary", "Mots" ou "Mathématiques")
+back_text = font.render("Quitter", True, (255, 255, 255)
+                        )  # Texte du bouton "Quitter"
+back_button_width = 150  # Largeur du bouton "Quitter"
+back_button_height = 50  # Hauteur du bouton "Quitter"
+back_button_x = 50  # Position en x du bouton "Quitter"
+back_button_y = 650  # Position en y du bouton "Quitter"
+back_button = pygame.Rect(back_button_x, back_button_y, back_button_width,
+                          back_button_height)  # Zone du bouton "Quitter"
+
+
+canvasPlayer2 = np.zeros((480, 640, 3), np.uint8)
+canvasPlayer2[:] = 255, 255, 255
+player2Surface = pygame.surfarray.make_surface(canvasPlayer2)
 
 
 def init(gameType):

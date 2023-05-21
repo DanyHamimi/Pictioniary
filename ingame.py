@@ -1,44 +1,4 @@
-import random
-import string
-import re
-import sys
-import os
-import io
-import socket
-import struct
-import time
-import threading
-
-
 from utils import *
-
-has2Hands = False
-global score
-valToFind = "0"
-scorePlayer2 = 0
-scorePlayer3 = 0
-scorePlayer4 = 0
-AmountPlayer = 0
-currentModel = None
-current_letter_index = None
-letters_found = None
-
-ListPlayers = []
-
-global send_thread
-global receive_thread
-fontMOT = pygame.font.Font('freesansbold.ttf', 60)
-stop_flag = threading.Event()
-isEndend = 0
-Online = 0
-typeGa = ""
-back_text = font.render("Quitter", True, (255, 255, 255))
-back_button_width = 150
-back_button_height = 50
-back_button_x = 50
-back_button_y = 650
-back_button = pygame.Rect(back_button_x, back_button_y,
-                          back_button_width, back_button_height)
 
 
 def setGameType(gameType):
@@ -129,11 +89,6 @@ def generateOtherValToFind(typeGame):
                 num2 = num1 * result
             return str(result) + ";" + str(num2) + operator + str(num1)
         return str(result) + ";" + str(num1) + operator + str(num2)
-
-
-canvasPlayer2 = np.zeros((480, 640, 3), np.uint8)
-canvasPlayer2[:] = 255, 255, 255
-player2Surface = pygame.surfarray.make_surface(canvasPlayer2)
 
 
 def display_current_word(word, letters_found):
