@@ -9,6 +9,15 @@ from config import *
 
 
 def drawLine(a, b, tmpcordX, tmpcordY, gomme):
+    """
+        Fonction qui dessine une ligne sur le canvas.
+        Arguments:
+        a (int): Coordonnée x de l'extrémité de la ligne.
+        b (int): Coordonnée y de l'extrémité de la ligne.
+        tmpcordX (int): Coordonnée x temporaire de la dernière position du curseur.
+        tmpcordY (int): Coordonnée y temporaire de la dernière position du curseur.
+        gomme (bool): Indique si le crayon est en mode gomme ou non.
+    """
     if tmpcordX == -1 and tmpcordY == -1:
         tmpcordX = a
         tmpcordY = b
@@ -31,6 +40,12 @@ def drawLine(a, b, tmpcordX, tmpcordY, gomme):
 
 
 def imagePrediction():
+    """
+    La fonction imagePrediction est utilisée pour prédire l'image dessinée sur le canvas. Elle charge l'image du canvas, la redimensionne en 28x28 pixels, effectue une inversion des couleurs et utilise le modèle de reconnaissance (model) pour prédire l'image. La fonction renvoie l'indice de la prédiction.
+
+    Return:
+        int: L'indice de la prédiction.
+    """
     imgBis = cv2.imread("Imgs/canvas.jpg")[:, :, 0]
     width = 28
     height = 28
@@ -44,6 +59,16 @@ def imagePrediction():
 
 
 def preprocess_image(image_path, type):
+    """
+    Fonction pour prétraiter une image avant la reconnaissance.
+
+    Args:
+        image_path (str): Chemin vers l'image à prétraiter.
+        type (str): Type d'image ('Mathématiques', 'Mots', 'Pictionary').
+
+    Returns:
+        np.array: Image prétraitée.
+    """
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     _, image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY_INV)
 
@@ -78,6 +103,13 @@ def preprocess_image(image_path, type):
 
 
 def index_to_letter(index):
+    """
+    Fonction pour convertir un indice d'alphabet en lettre en ascii.
+    Arguments:
+        index (int): Indice de l'alphabet.
+    Return:
+        str: Lettre en ascii.
+    """
     # Convertir l'index en code ASCII (A: 65, B: 66, ..., Z: 90)
     ascii_value = index + 65
 
@@ -87,11 +119,21 @@ def index_to_letter(index):
     return letter
 
 
-objet_names = ["POMME", "LIVRE", "ECLAIR", "SERPENT", "LA TOUR EIFFEL", "BANANE", "AVION", "SEAU", "ENVELOPPE",
-               "CAROTTE", "HACHE", "REVEIL", "CHAT", "ENCUME", "FLEUR", "MAIN", "LUNETTES", "PAPILLON", "TRIANGLE", "SHORTS"]
+objet_names = ["POMME", "ECLAIR", "SERPENT", "LA TOUR EIFFEL", "BANANE", "AVION", "SEAU", "ENVELOPPE", "CAROTTE",
+               "HACHE", "REVEIL", "RAISINS", "CHAT", "ENCLUME", "FLEUR", "MAIN", "LUNETTES", "PAPILLON", "TRIANGLE", "SHORT"]
 
 
 def predict(image_array, model, predict_type):
+    """
+        Fonction pour prédire une image selon le modèle utilisé.
+        Arguments:
+            image_array (np.array): Image à prédire.
+            model (keras.models.Model): Modèle utilisé pour la prédiction.
+            predict_type (str): Type de prédiction ('Mathématiques', 'Mots', 'Pictionary').
+        Return:
+            Les deux prédictions les plus probables du modèle utilisé.
+    """
+
     prediction = model.predict(image_array)[0]
 
     # Obtenir les indices des deux plus grandes probabilités
@@ -126,30 +168,6 @@ def predict(image_array, model, predict_type):
         return first_prediction
     else:
         raise ValueError("predict_type doit être 'letter', 'draw' ou 'number'")
-
-
-def predict_letter(image_array, model):
-    prediction = model.predict(image_array)[0]
-
-    # Obtenir les indices des deux plus grandes probabilités
-    top_2_indices = np.argpartition(prediction, -2)[-2:]
-    top_2_indices_sorted = top_2_indices[np.argsort(
-        prediction[top_2_indices])][::-1]
-
-    # Obtenir les lettres et les probabilités correspondantes
-    first_letter = index_to_letter(top_2_indices_sorted[0])
-    first_probability = prediction[top_2_indices_sorted[0]] * 100
-
-    second_letter = index_to_letter(top_2_indices_sorted[1])
-    second_probability = prediction[top_2_indices_sorted[1]] * 100
-
-    print(
-        f"La lettre la plus probable est {first_letter} avec une probabilité de {first_probability:.2f}%")
-    print(
-        f"La deuxième lettre la plus probable est {second_letter} avec une probabilité de {second_probability:.2f}%")
-
-    # Return in lower case
-    return first_letter.upper()
 
 
 def win(type):

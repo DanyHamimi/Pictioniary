@@ -5,7 +5,7 @@ import math
 import socket
 from config import *
 from utils import *
-from solo import mainSolo
+from ingame import mainGame
 
 username = "user"
 
@@ -23,6 +23,13 @@ window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 def show_servers_prerequest(ip, stringToSend):
+    """
+    Effectue une requête au serveur pour obtenir la liste des parties disponibles
+    Arguments:
+        ip (str): L'adresse IP du serveur
+        stringToSend (str): La chaîne de caractères à envoyer au serveur pour la requête
+        car cette fonction est utilisée pour créer une partie et demander la liste des parties
+    """
     print("L'adresse IP saisie est :", ip)
     SERVER_HOST = ip
     SERVER_PORT = 8080
@@ -50,6 +57,13 @@ def show_servers_prerequest(ip, stringToSend):
 
 
 def ask_for_ip(window):
+    """
+    Affiche une fenêtre pour demander à l'utilisateur d'entrer une adresse IP
+    Argument:
+        window (pygame.Surface): La fenêtre d'affichage de pygame
+    Return:
+        str: L'adresse IP saisie par l'utilisateur
+    """
     font = pygame.font.SysFont("Arial", 30)
     input_box = pygame.Rect(SCREEN_WIDTH // 2 - 100,
                             SCREEN_HEIGHT // 2 - 20, 200, 40)
@@ -95,6 +109,11 @@ def ask_for_ip(window):
 
 
 def show_game_modes(window):
+    """
+    Affiche les différents modes de jeu disponibles dans une fenêtre
+    Argument:
+        window (pygame.Surface): La fenêtre d'affichage de pygame
+    """
     font = pygame.font.SysFont("Arial", 30)
 
     game_mode_buttons = []
@@ -141,7 +160,7 @@ def show_game_modes(window):
                             f"Le mode de jeu {game_modes[i]} a été sélectionné !")
                         window.fill((0, 0, 0))
                         pygame.display.update()
-                        mainSolo("Solo", game_modes[i], -1, 0, 1, "user")
+                        mainGame("Solo", game_modes[i], -1, 0, 1, "user")
 
         window.blit(background, (0, 0))
 
@@ -198,21 +217,26 @@ buttonQuit_y = logo_y + logo_height + 300
 
 
 def show_servers(window, welcomemsg, ipserv):
+    """
+    Affiche la liste des serveurs disponibles dans une fenêtre avec 
+    les bouttons pour créer un serveur et pour rafrachir la liste
+    en refaisant une requête au serveur
+    Arguments:
+        window (pygame.Surface): La fenêtre d'affichage de pygame
+        welcomemsg (str): Le message d'accueil du serveur contenant les informations des parties disponibles
+        ipserv (str): L'adresse IP du serveur
+    """
     global username
     font = pygame.font.SysFont("Arial", 30)
 
-    # Titre "LISTE DES PARTIES"
-    # Police en gras avec une taille de 40
     title_font = pygame.font.SysFont("Arial", 40, True)
     title_text = title_font.render("LISTE DES PARTIES", True, (255, 255, 255))
     title_x = (window.get_width() - title_text.get_width()) // 2
     title_y = 50
 
-    # Champ pour le nom d'utilisateur
     username_label = font.render("Pseudo: ", True, (255, 255, 255))
     username_text = username
     username_input_rect = pygame.Rect(150, window.get_height() - 100, 200, 50)
-    username_input_active = False
 
     server_buttons = []
     join_buttons = []
@@ -303,7 +327,7 @@ def show_servers(window, welcomemsg, ipserv):
                                        2]).split("/")[1]
                         if (username == ""):
                             username = "user"
-                        mainSolo("Online", typeGame, i,
+                        mainGame("Online", typeGame, i,
                                  ipserv, max_players, username)
                         show_servers_prerequest(ip, "askserverforplayers")
                         return
@@ -314,9 +338,10 @@ def show_servers(window, welcomemsg, ipserv):
                     username = username[:-1]
                     username_text = username
                 else:
-                    username += event.unicode
-
-                    username_text = username
+                    if (len(username) < 10):
+                        if (event.unicode in string.ascii_letters or event.unicode in string.digits):
+                            username += event.unicode
+                            username_text = username
 
         window.blit(background, (0, 0))
 
@@ -359,6 +384,12 @@ def show_servers(window, welcomemsg, ipserv):
 
 
 def create_server(window):
+    """
+    Affiche la fenêtre de création d'un serveur et envoie
+    une requête au serveur pour créer le serveur demanandé.
+    Arguments:
+        window (pygame.Surface): La fenêtre d'affichage de pygame
+    """
     font = pygame.font.SysFont("Arial", 30)
     input_boxes = []
     labels = []
@@ -464,7 +495,6 @@ def create_server(window):
                     else:
                         active = False
                     if active:
-                        print("active")
                         if event.key == pygame.K_RETURN:
                             inputs[i] = input_text
                             input_text = ""

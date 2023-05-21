@@ -12,15 +12,17 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class VideoServer {
-    private static final int PORT = 8080;
-    private static final int MAX_GAMES = 8;
-    private static int NB_ACTUAL_GAMES = 0;
-    private static final int SCORE_TO_WIN = 3;
+    private static final int PORT = 8080; // Port sur lequel le serveur écoute
+    private static final int MAX_GAMES = 8; // Nombre maximum de parties de jeu autorisées
+    private static int NB_ACTUAL_GAMES = 0; // Nombre de parties de jeu en cours actuellement
+    private static final int SCORE_TO_WIN = 10; // Score requis pour gagner la partie
 
+    // Stockage des parties de jeu en cours
     private static final ConcurrentHashMap<Integer, Game> games = new ConcurrentHashMap<>();
     private static final Lock gamesLock = new ReentrantLock();
-    private static ArrayList<Integer> disconnectedIndices = new ArrayList<>();
+    private static ArrayList<Integer> disconnectedIndices = new ArrayList<>(); // Indices des clients déconnectés
 
+    // Supprime les parties de jeu terminées
     public static void deleteGamesWithIsGameFinished() {
         List<Integer> keysToRemove = new ArrayList<>();
 
@@ -50,9 +52,10 @@ public class VideoServer {
     }
 
     public static void main(String[] args) throws IOException {
+        // Initialisation des parties de jeu
         for (int i = 0; i < 1; i++) {
             games.put(i, new Game(Game.GameType.PICTIONARY, "Default", 4));
-            NB_ACTUAL_GAMES++;   //On fait une game défaut
+            NB_ACTUAL_GAMES++;   // On fait une game défaut
         }
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Serveur en attente de connexions...");
@@ -65,21 +68,26 @@ public class VideoServer {
     }
 
     static class Game {
+        // Types de jeu disponibles
         public enum GameType {
             MATHEMATIQUES, MOTS, PICTIONARY
         }
 
-        private int isGameFinished = 0;
-        private String name;
-        private GameType gameType;
-        private final int maxplayergame;
-        private List<String> mots;
-        private List<String> pictionaryWords = Arrays.asList("pomme", "livre", "eclair", "serpent", "la Tour Eiffel", "banane", "avion", "seau", "enveloppe", "carotte", "hache", "reveil", "chat", "enclume", "fleur", "main", "lunettes", "papillon", "triangle", "shorts");
-        ConcurrentHashMap<Socket, DataOutputStream> clients = new ConcurrentHashMap<>();
-        ConcurrentHashMap<Socket, Integer> clientIndices = new ConcurrentHashMap<>(); // Store the indices for each client
-        String valToFind = "1";
-        ConcurrentHashMap<Socket, Integer> scores = new ConcurrentHashMap<>();
-        private final Lock gameLock = new ReentrantLock();
+        private int isGameFinished = 0; // Indique si la partie de jeu est terminée (1 = terminée, 0 = en cours)
+        private String name; // Nom de la partie de jeu
+        private GameType gameType; // Type de jeu
+        private final int maxplayergame; // Nombre maximum de joueurs dans la partie de jeu
+        private List<String> mots; // Liste de mots pour le jeu "Mots"
+        private List<String> pictionaryWords = Arrays.asList(
+            "POMME", "ECLAIR", "SERPENT", "LA TOUR EIFFEL", "BANANE", "AVION",
+            "SEAU", "ENVELOPPE", "CAROTTE", "HACHE", "REVEIL", "RAISINS", "CHAT",
+            "ENCLUME", "FLEUR", "MAIN", "LUNETTES", "PAPILLON", "TRIANGLE", "SHORT"
+        ); // Liste de mots pour le jeu "Pictionary"
+        ConcurrentHashMap<Socket, DataOutputStream> clients = new ConcurrentHashMap<>(); // Clients connectés à la partie de jeu
+        ConcurrentHashMap<Socket, Integer> clientIndices = new ConcurrentHashMap<>(); // Indices des clients dans la partie de jeu
+        String valToFind = "1"; // Valeur à trouver dans la partie de jeu
+        ConcurrentHashMap<Socket, Integer> scores = new ConcurrentHashMap<>(); // Scores des clients dans la partie de jeu
+        private final Lock gameLock = new ReentrantLock(); // Verrou pour la synchronisation
 
         public Game(GameType gameType, String name, int maxplayergame) {
             this.gameType = gameType;
@@ -87,7 +95,7 @@ public class VideoServer {
             this.maxplayergame = maxplayergame;
             if (gameType == GameType.MOTS) {
                 try {
-                    mots = Files.readAllLines(Paths.get("Mots.txt"));
+                    mots = Files.readAllLines(Paths.get("Mots.txt")); // Chargement des mots depuis un fichier
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -103,6 +111,7 @@ public class VideoServer {
             return name;
         }
 
+        // Génère un problème mathématique aléatoire
         public static String generateMathProblem() {
             Random random = new Random();
             int result = random.nextInt(10);
@@ -134,9 +143,9 @@ public class VideoServer {
                     break;
                 case 3:
                     operator = "//";
-                    while (num2 == 0) {
-                        num1 = random.nextInt(9) + 1;
-                        num2 = num1 * result;
+                    while (num1 == 0) {
+                        num2 = random.nextInt(9) + 1;
+                        num1 = num2 * result;
                     }
                     break;
             }
@@ -144,9 +153,10 @@ public class VideoServer {
             String mathProblem = String.format("%d %s %d", num1, operator, num2);
             System.out.println("Calcul à résoudre : " + mathProblem);
 
-            return result + ";" + num2 + operator + num1;
+            return result + ";" + num1 + operator + num2;
         }
 
+        // Met à jour la valeur à trouver en fonction du type de jeu
         public void updateValToFind() {
             switch (gameType) {
                 case MATHEMATIQUES:
@@ -159,12 +169,16 @@ public class VideoServer {
                     valToFind = pictionaryWords.get((int) (Math.random() * pictionaryWords.size()));
                     break;
             }
+
+            // Vérifie si un client a atteint le score requis pour gagner la partie
             for (Socket client : clients.keySet()) {
                 if (scores.get(client) == SCORE_TO_WIN) {
                     System.out.println("Partie finie");
                     isGameFinished = 1;
                 }
             }
+
+            // Si la partie est terminée, ferme les connexions des clients et supprime la partie de jeu
             if (isGameFinished == 1) {
                 if (this.clients.size() > 0) {
                     try {
@@ -191,7 +205,7 @@ public class VideoServer {
         private final Socket clientSocket;
         private String username;
         private int idServer;
-        private int clientIndex; // Store the index for the client
+        private int clientIndex; // Stocker l'indice pour le client
 
         public ClientHandler(Socket clientSocket) {
             this.clientSocket = clientSocket;
@@ -208,9 +222,8 @@ public class VideoServer {
                 String receivedMessage = inputReader.readLine();
                 System.out.println("Received message: " + receivedMessage);
 
-                // Si le message est "defaultUser", renvoyez "salut" et terminez le thread
+                // Si le message est "askserverforplayers", renvoie la liste des jeux et leur nombre de joueurs
                 if ("askserverforplayers".equalsIgnoreCase(receivedMessage)) {
-                    // Print all the games and their number of players
                     String gamesString = "";
                     for (int i = 0; i < MAX_GAMES; i++) {
                         if (games.get(i) != null) {
@@ -220,7 +233,7 @@ public class VideoServer {
                     outputWriter.println(gamesString);
                     clientSocket.close();
                 } else if ("createserver".equalsIgnoreCase(receivedMessage.split(";")[0])) {
-                    // msg with have the form "createserver;gameType;gameName;slots"
+                    // Le message a la forme "createserver;gameType;gameName;slots"
                     String gameType = receivedMessage.split(";")[1].toUpperCase();
                     String gameName = receivedMessage.split(";")[2];
                     int slots = Integer.parseInt(receivedMessage.split(";")[3]);
@@ -254,12 +267,12 @@ public class VideoServer {
                     try {
                         Game game = games.get(idServer);
 
-                        if (game.clients.size() < game.maxplayergame) {
+                        if (game != null && game.clients.size() < game.maxplayergame) {
                             if (!disconnectedIndices.isEmpty()) {
                                 clientIndex = disconnectedIndices.remove(0);
                                 System.out.println("Indice récupéré : " + clientIndex);
                             } else {
-                                clientIndex = game.clients.size() + 1; // Assign the index for the client
+                                clientIndex = game.clients.size() + 1; // Assigner l'indice pour le client
                             }
 
                             game.clients.put(clientSocket, outputStream);
@@ -279,7 +292,7 @@ public class VideoServer {
                                 out.write(value.getBytes(StandardCharsets.UTF_8));
                             }
                         } else {
-                            // Send to the client that the game is full
+                            // Envoyer au client que la partie est pleine
                             outputStream.writeInt(400);
                             throw new IOException("Partie pleine");
                         }
