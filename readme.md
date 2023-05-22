@@ -5,9 +5,11 @@
 ## Requirements
 
 Pour pouvoir executer le programme il faut avoir
+(Version testées donc recommendées)
 
 - Python 3.9.6 et pip 23.1.2 Java 19 (Pour macOS silicon)
 - Python 3.7.9 et pip 23.1.2 Java 19 (Pour Windows)
+- Python 3.10.6 et pip 23.1.2 Java 17 (Pour Ubuntu)
 
 ## Installation
 
@@ -18,12 +20,12 @@ faites la commande suivante dans le terminal
 pip install -r dependencies/RequireMacSilicon1;pip install -r dependencies/RequireMacSilicon2
 ```
 
-Si vous êtes sous windows et que vous souhaitez installer les dépendances
+Si vous êtes sous windows ou ubuntu et que vous souhaitez installer les dépendances
 
 faites la commande suivante dans le terminal
 
 ```bash
-pip install -r dependencies/RequireWindows
+pip install -r dependencies/RequireWindowsUbuntu
 ```
 
 ## Lancement de l'application
